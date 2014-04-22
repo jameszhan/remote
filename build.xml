@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<project name="jaxws" basedir=".">
+
+	<property file="build.properties" />
+	<property name="jaxws.lib.dir" value="${jaxws.root.dir}"/>
+	<property name="name.external" value="com.apple.jaxws.hello"/>
+	<property name="name.external" value="com.apple.jaxws.hello"/>
+
+	<path id="jaxws.classpath">
+		<pathelement location="${java.home}/../lib/tools.jar"/>
+		<fileset dir="${jaxws.lib.dir}">
+			<include name="*jax*.jar"/>
+			<exclude name="j2ee.jar"/>
+		</fileset>
+	</path>
+
+	<taskdef name="wsimport" classname="com.sun.tools.ws.ant.WsImport">
+		<classpath refid="jaxws.classpath"/>
+	</taskdef>
+
+	<target name="build">
+		<wsimport debug="true"
+				verbose="true"
+				keep="true"
+				extension="true"
+				destdir="./src"
+				package="${name.external}"
+				wsdlLocation="./wsdl/hello.wsdl"
+				wsdl="${input.src}/iface/${name.external}.wsdl">					
+		</wsimport>
+	</target>
+
+
+</project>
