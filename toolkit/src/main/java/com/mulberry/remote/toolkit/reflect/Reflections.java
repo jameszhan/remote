@@ -1,9 +1,9 @@
 /*
- * Copyright 1999-2004 Alibaba.com All right reserved. This software is the confidential and proprietary information of
+ * Copyright 1999-2014 Alibaba.com All right reserved. This software is the confidential and proprietary information of
  * Alibaba.com ("Confidential Information"). You shall not disclose such Confidential Information and shall use it only
  * in accordance with the terms of the license agreement you entered into with Alibaba.com.
  */
-package com.mulberry.remote.toolkit;
+package com.mulberry.remote.toolkit.reflect;
 
 import com.google.common.base.Supplier;
 import com.google.common.cache.CacheBuilder;

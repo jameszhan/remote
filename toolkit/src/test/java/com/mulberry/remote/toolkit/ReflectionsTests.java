@@ -6,6 +6,7 @@
 package com.mulberry.remote.toolkit;
 
 import com.google.common.base.Supplier;
+import com.mulberry.remote.toolkit.reflect.Reflections;
 import org.junit.Assert;
 import org.junit.Test;
 
