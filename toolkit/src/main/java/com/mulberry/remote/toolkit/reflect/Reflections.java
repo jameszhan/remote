@@ -13,6 +13,10 @@ import net.sf.cglib.beans.BeanCopier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.NotNull;
+import java.lang.reflect.Field;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +40,57 @@ public final class Reflections {
             return BeanCopier.create(key.fromClass, key.toClass, false);
         }
     });
+
+    public static ClassLoader getContextClassLoader() {
+        return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+            public ClassLoader run() {
+                ClassLoader cl = null;
+                try {
+                    cl = Thread.currentThread().getContextClassLoader();
+                } catch (SecurityException ex) {
+                    LOGGER.warn("Can't find current classloader.", ex);
+                }
+                return cl;
+            }
+        });
+    }
+
+    public static Field getDeclaredField(@NotNull Class<?> type, @NotNull String name){
+        Field f = null;
+        for (; null == f && null != type;) {
+            try {
+                f = type.getDeclaredField(name);
+            } catch (NoSuchFieldException e) {
+                type = type.getSuperclass();
+            }
+        }
+        return f;
+    }
+
+    public static <T> T getFieldValue(@NotNull Object target, @NotNull String name) {
+        Field f = getDeclaredField(target.getClass(), name);
+        if (f != null) {
+            f.setAccessible(true);
+            try {
+                return (T)f.get(target);
+            } catch (IllegalAccessException e) {
+                //This will never happen.
+            }
+        }
+        return null;
+    }
+
+    public static void setDeclaredField(@NotNull Object obj, @NotNull String name, Object value) {
+        Field f = getDeclaredField(obj.getClass(), name);
+        if (f != null){
+            f.setAccessible(true);
+            try {
+                f.set(obj, value);
+            } catch (IllegalAccessException e) {
+                //This will never happen.
+            }
+        }
+    }
 
     /**
      *
@@ -108,4 +163,5 @@ public final class Reflections {
             return new StringBuilder().append(fromClass.getName()).append(":").append(toClass.getName()).toString();
         }
     }
+
 }
