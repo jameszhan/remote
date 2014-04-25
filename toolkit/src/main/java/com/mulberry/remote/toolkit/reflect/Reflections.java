@@ -13,7 +13,7 @@ import net.sf.cglib.beans.BeanCopier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.constraints.NotNull;
+import javax.annotation.Nonnull;
 import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -55,7 +55,7 @@ public final class Reflections {
         });
     }
 
-    public static Field getDeclaredField(@NotNull Class<?> type, @NotNull String name){
+    public static Field getDeclaredField(@Nonnull Class<?> type, @Nonnull String name){
         Field f = null;
         for (; null == f && null != type;) {
             try {
@@ -67,7 +67,7 @@ public final class Reflections {
         return f;
     }
 
-    public static <T> T getFieldValue(@NotNull Object target, @NotNull String name) {
+    public static <T> T getFieldValue(@Nonnull Object target, @Nonnull String name) {
         Field f = getDeclaredField(target.getClass(), name);
         if (f != null) {
             f.setAccessible(true);
@@ -80,7 +80,7 @@ public final class Reflections {
         return null;
     }
 
-    public static void setDeclaredField(@NotNull Object obj, @NotNull String name, Object value) {
+    public static void setDeclaredField(@Nonnull Object obj, @Nonnull String name, Object value) {
         Field f = getDeclaredField(obj.getClass(), name);
         if (f != null){
             f.setAccessible(true);

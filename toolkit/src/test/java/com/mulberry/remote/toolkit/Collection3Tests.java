@@ -27,7 +27,7 @@ public class Collection3Tests {
     @Test
     public void reduce() {
         int ret = Collections3.reduce(ImmutableList.of(1l, 2l, 3l), 10, new Function<Integer, Function<Long, Integer>>() {
-            public Function<Long, Integer> apply(Integer memo) {
+            public Function<Long, Integer> apply(final Integer memo) {
                 return new Function<Long, Integer>() {
                     public Integer apply(Long el) {
                         return memo + el.intValue();
@@ -38,7 +38,7 @@ public class Collection3Tests {
         Assert.assertEquals(ret, 16);
 
         ret = Collections3.reduce(ImmutableList.of(1l, 2l, 3l), new Function<Integer, Function<Long, Integer>>() {
-            public Function<Long, Integer> apply(Integer memo) {
+            public Function<Long, Integer> apply(final Integer memo) {
                 return new Function<Long, Integer>() {
                     public Integer apply(Long el) {
                         int a = memo == null ? 0 : memo, b = el == null ? 0 : el.intValue();

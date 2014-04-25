@@ -9,7 +9,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.google.common.annotations.GwtCompatible;
 
-import javax.validation.constraints.NotNull;
+import javax.annotation.Nonnull;
 
 /**
  * Created with IntelliJ IDEA.
@@ -39,9 +39,10 @@ public interface Consumer<T> {
      * @return a composed {@code Consumer} that performs in sequence this
      * operation followed by the {@code after} operation
      * @throws NullPointerException if {@code after} is null
-     */
-    default Consumer<T> andThen(@NotNull Consumer<? super T> after) {
+
+    default Consumer<T> andThen(@Nonnull Consumer<? super T> after) {
         checkNotNull(after);
         return (T t) -> { accept(t); after.accept(t); };
     }
+    */
 }

@@ -7,6 +7,7 @@ package com.mulberry.remote.toolkit.base;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Range;
 
 import java.util.Collection;
 import java.util.List;
@@ -53,6 +54,35 @@ public final class Collections3 {
      */
     public static long randLong(long start, long end){
         return (long)(start + Math.random() * (end - start));
+    }
+
+    /**
+     * Finding out the [min, max] range in given list.
+     *
+     * @param c
+     * @param min
+     * @param max
+     * @param defaultValue
+     * @param function
+     * @param <T>
+     * @param <E>
+     * @return
+     */
+    public static <T extends Comparable<T>, E> Range<T> rangeFor(Collection<E> c, Function<E, T> function,
+                                                                 T min, T max, T defaultValue) {
+        if (c != null && c.size() > 0) {
+            for (E e : c) {
+                T val = function.apply(e);
+                if (val != null && max.compareTo(val) < 0) {
+                    max = val;
+                }
+                if (val != null && min.compareTo(val) > 0) {
+                    min = val;
+                }
+            }
+            return Range.closed(min, max);
+        }
+        return Range.closed(defaultValue, defaultValue);
     }
 
     public static <F, T> Collection<T> collect(Collection<F> fromCollection, Function<? super F, T> function) {
