@@ -5,21 +5,31 @@
  */
 package com.mulberry.remote.toolkit.scan;
 
-import com.google.common.base.*;
+import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableSet;
 import com.mulberry.remote.toolkit.base.Consumer;
 import com.mulberry.remote.toolkit.base.Consumers;
+import com.mulberry.remote.toolkit.io.URLs;
 import com.mulberry.remote.toolkit.reflect.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Enumeration;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.zip.ZipError;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Created with IntelliJ IDEA.
@@ -33,22 +43,38 @@ public final class Scanners {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Scanners.class);
     private static final Set<String> ZIP_FILE_FORMATS = ImmutableSet.of("jar", "zip", "war", "par", "ear");
-    private static final Predicate<Path> IS_ZIP_FILE = new Predicate<Path>(){
-        @Override public boolean apply(@Nullable Path input) {
-            return input != null && ZIP_FILE_FORMATS.contains(com.google.common.io.Files.getFileExtension(input.toString()));
+    private static final Predicate<Path> IS_ZIP_FILE = new ExtensionPredicate(ZIP_FILE_FORMATS);
+
+    public static void scan(URLClassLoader classLoader, Set<String> packages, final Predicate<Path> predicate, final Consumer<Path> consumer) throws IOException{
+        for (String p : packages) {
+            Enumeration<URL> e = classLoader.getResources(p.replace(".", "/"));
+            while (e.hasMoreElements()) {
+                URL url = e.nextElement();
+                Path path = URLs.toPath(url, classLoader);
+                Files.walkFileTree(path, new SimpleFileVisitor<Path>(){
+                    @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        if (predicate.apply(file)) {
+                            consumer.accept(file);
+                        }
+                        return super.visitFile(file, attrs);
+                    }
+                });
+            }
         }
-    };
+    }
+
+    public static void scan(Path path, String dirPattern, String extension, Consumer<Path> consumer) throws IOException {
+        scan(path, new PatternPredicate(dirPattern), new ExtensionPredicate(extension), consumer);
+    }
 
     public static void scan(String file, Predicate<String> selector, Predicate<String> predicate, Consumer<String> consumer) throws IOException {
-        scan(Paths.get(file),
-                Predicates.compose(selector, PathToString.INSTANCE),
+        scan(Paths.get(file), Predicates.compose(selector, PathToString.INSTANCE),
                 Predicates.compose(predicate, PathToString.INSTANCE),
                 Consumers.compose(consumer, PathToString.INSTANCE));
     }
 
     public static void scan(File file, Predicate<File> selector, Predicate<File> predicate, Consumer<File> consumer) throws IOException {
-        scan(Paths.get(file.toURI()),
-                Predicates.compose(selector, PathToFile.INSTANCE),
+        scan(Paths.get(file.toURI()), Predicates.compose(selector, PathToFile.INSTANCE),
                 Predicates.compose(predicate, PathToFile.INSTANCE),
                 Consumers.compose(consumer, PathToFile.INSTANCE));
     }
@@ -81,7 +107,7 @@ public final class Scanners {
     private static enum PathToString implements Function<Path, String>{
         INSTANCE;
 
-        @Override public String apply(@Nonnull Path input) {
+        @Override public String apply(Path input) {
             return input.toString();
         }
 
@@ -90,20 +116,65 @@ public final class Scanners {
         }
     }
 
+    private static class ExtensionPredicate implements Predicate<Path> {
+        private final Set<String> extensions;
+
+        private ExtensionPredicate(String extension) {
+            this.extensions = ImmutableSet.of(extension);
+        }
+
+        private ExtensionPredicate(Set<String> extensions) {
+            this.extensions = checkNotNull(extensions);
+        }
+
+        @Override public boolean apply(@Nullable Path input) {
+            return input != null && extensions.contains(com.google.common.io.Files.getFileExtension(input.toString()));
+        }
+    }
+
+    private static class PatternPredicate implements Predicate<Path> {
+        private final Pattern pattern;
+
+        private PatternPredicate(String patternString) {
+            StringBuilder sb = new StringBuilder();
+            if (!patternString.startsWith("^")) {
+                sb.append("^.*");
+            }
+            sb.append(patternString);
+            if(!patternString.endsWith("$")) {
+                sb.append(".*$");
+            }
+            this.pattern = Pattern.compile(sb.toString(), Pattern.CASE_INSENSITIVE);
+        }
+
+        @Override public boolean apply(@Nullable Path input) {
+            return input != null && pattern.matcher(input.toString()).find();
+        }
+    }
+
     private static class DefaultFileVisitor implements FileVisitor<Path> {
 
+        private final Predicate<Path> dirFilter;
         private final Predicate<Path> selector;
         private final Predicate<Path> predicate;
         private final Consumer<Path> consumer;
 
         private DefaultFileVisitor(Predicate<Path> selector, Predicate<Path> predicate, Consumer<Path> consumer) {
+            this.dirFilter = Predicates.alwaysTrue();
+            this.selector = selector;
+            this.predicate = predicate;
+            this.consumer = consumer;
+        }
+
+        private DefaultFileVisitor(Predicate<Path> dirFilter, Predicate<Path> selector, Predicate<Path> predicate, Consumer<Path> consumer) {
+            this.dirFilter = dirFilter;
             this.selector = selector;
             this.predicate = predicate;
             this.consumer = consumer;
         }
 
         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-            if (selector.apply(dir)) {
+            if (dirFilter.apply(dir)) {
                 return FileVisitResult.CONTINUE;
             } else {
                 return FileVisitResult.SKIP_SUBTREE;
@@ -114,7 +185,7 @@ public final class Scanners {
             if (IS_ZIP_FILE.apply(file)) {
                 walkZipTree(file, this);
             } else {
-                if (predicate.apply(file)) {
+                if (file != null && selector.apply(file.getParent()) && predicate.apply(file)) {
                     consumer.accept(file);
                 }
             }

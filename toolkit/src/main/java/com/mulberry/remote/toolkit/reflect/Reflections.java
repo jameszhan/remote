@@ -55,7 +55,7 @@ public final class Reflections {
         });
     }
 
-    public static Field getDeclaredField(@Nonnull Class<?> type, @Nonnull String name){
+    public static Field getDeclaredField(Class<?> type, @Nonnull String name){
         Field f = null;
         for (; null == f && null != type;) {
             try {

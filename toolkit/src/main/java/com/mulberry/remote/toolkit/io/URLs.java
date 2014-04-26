@@ -10,8 +10,15 @@ import com.mulberry.remote.toolkit.reflect.Reflections;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Created with IntelliJ IDEA.
@@ -50,6 +57,27 @@ public final class URLs {
     public static boolean isJarURL(URL url) {
         String up = url.getProtocol();
         return (URL_PROTOCOL_JAR.equals(up) || URL_PROTOCOL_ZIP.equals(up) || URL_PROTOCOL_WSJAR.equals(up));
+    }
+
+    public static Path toPath(URL url, ClassLoader cl) throws IOException {
+        if (isJarURL(url)) {
+            String urlFile = url.getFile();
+            int separatorIndex = urlFile.indexOf(JAR_URL_SEPARATOR);
+            if (separatorIndex != -1) {
+                String jarFile = urlFile.substring(0, separatorIndex);
+                String path = urlFile.substring(separatorIndex + 1);
+                FileSystem fs = FileSystems.newFileSystem(Paths.get(URI.create(jarFile)), cl);
+                return fs.getPath(path);
+            } else {
+                return null;
+            }
+        } else {
+            try {
+                return Paths.get(url.toURI());
+            } catch (URISyntaxException e) {
+                return null;
+            }
+        }
     }
 
     public static boolean isFileURL(URL url) {

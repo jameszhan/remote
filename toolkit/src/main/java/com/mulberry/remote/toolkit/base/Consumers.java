@@ -9,6 +9,7 @@ import com.google.common.base.*;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
+import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -21,6 +22,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class Consumers {
     private Consumers(){}
+
+    public static <T> Consumer<T> collect(Collection<T> c) {
+        checkNotNull(c);
+        return new CollectConsumer<T>(c);
+    }
 
     public static <A, B> Consumer<A> compose(Consumer<B> consumer, Function<A, B> function) {
         checkNotNull(function);
@@ -59,5 +65,36 @@ public final class Consumers {
 
         private static final long serialVersionUID = 0;
     }
+
+    private static class CollectConsumer<T> implements Consumer<T>, Serializable {
+        final Collection<T> c;
+
+        private CollectConsumer(Collection<T> c) {
+            this.c = c;
+        }
+
+        @Override public void accept(T a) {
+            c.add(a);
+        }
+
+        @Override public boolean equals(@Nullable Object obj) {
+            if (obj instanceof CollectConsumer) {
+                CollectConsumer<?> that = (CollectConsumer<?>) obj;
+                return c.equals(that.c);
+            }
+            return false;
+        }
+
+        @Override public int hashCode() {
+            return Objects.hashCode("collect", c);
+        }
+
+        @Override public String toString() {
+            return "Consumers.collect(" + c + ")";
+        }
+
+        private static final long serialVersionUID = 0;
+    }
+
 
 }
