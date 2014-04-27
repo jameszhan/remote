@@ -9,9 +9,20 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>mulberry-test-common</artifactId>
+    <artifactId>mulberry-remote-jaxrs</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>com.mulberry</groupId>
+            <artifactId>mulberry-remote-api</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.mulberry</groupId>
+            <artifactId>mulberry-test-common</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

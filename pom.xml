@@ -5,8 +5,8 @@
 
     <version>1.0-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.mulberry.remote</groupId>
-    <artifactId>remote</artifactId>
+    <groupId>com.mulberry</groupId>
+    <artifactId>mulberry</artifactId>
     <packaging>pom</packaging>
     <properties>
         <java_source_version>1.7</java_source_version>
@@ -342,8 +342,11 @@
     <modules>
         <module>./toolkit</module>
         <module>./test-common</module>
-        <module>./api</module>
-        <module>./httpinvoker</module>
+        <module>./remote-api</module>
+        <module>./remote-httpinvoker</module>
+        <module>./remote-caucho</module>
+        <module>./remote-jaxws</module>
+        <module>./remote-jaxrs</module>
     </modules>
 
 </project>
