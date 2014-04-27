@@ -5,11 +5,13 @@
 
     <version>1.0-SNAPSHOT</version>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>remote</artifactId>
     <groupId>com.mulberry.remote</groupId>
+    <artifactId>remote</artifactId>
     <packaging>pom</packaging>
-
     <properties>
+        <java_source_version>1.7</java_source_version>
+        <java_target_version>1.7</java_target_version>
+        <file_encoding>UTF-8</file_encoding>
         <log4j.version>1.2.17</log4j.version>
         <slf4j.version>1.7.6</slf4j.version>
         <guava.version>16.0.1</guava.version>
@@ -145,8 +147,6 @@
                 <version>${jetty.version}</version>
             </dependency>
 
-
-
             <dependency>
                 <groupId>org.freemarker</groupId>
                 <artifactId>freemarker</artifactId>
@@ -255,7 +255,6 @@
         </dependencies>
     </dependencyManagement>
 
-
     <build>
         <sourceDirectory>src/main/java</sourceDirectory>
         <testSourceDirectory>src/test/java</testSourceDirectory>
@@ -298,10 +297,51 @@
                 <directory>src/test/resources</directory>
             </testResource>
         </testResources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>env</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <echo>*******************************************************</echo>
+                                <property name="compile_classpath" refid="maven.compile.classpath" />
+                                <property name="runtime_classpath" refid="maven.runtime.classpath" />
+                                <property name="test_classpath" refid="maven.test.classpath" />
+                                <property name="plugin_classpath" refid="maven.plugin.classpath" />
+
+                                <echo message="compile classpath: ${compile_classpath}" />
+                                <echo message="runtime classpath: ${runtime_classpath}" />
+                                <echo message="test classpath: ${test_classpath}" />
+                                <echo message="plugin classpath: ${plugin_classpath}" />
+                                <echo>*******************************************************</echo>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.7</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <modules>
-        <module>toolkit</module>
+        <module>./toolkit</module>
+        <module>./api</module>
     </modules>
 
 </project>

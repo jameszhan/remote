@@ -101,7 +101,7 @@ public final class Reflections {
         if (sourceList == null || supplier == null) {
             return Collections.emptyList();
         }
-        List<T> targetList = new ArrayList<>();
+        List<T> targetList = new ArrayList<T>();
         for (S source : sourceList) {
             T target = supplier.get();
             copy(source, target);

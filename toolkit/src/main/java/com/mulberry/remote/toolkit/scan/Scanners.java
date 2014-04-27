@@ -84,10 +84,13 @@ public final class Scanners {
     }
 
     public static Path walkZipTree(@Nonnull Path zipFile, FileVisitor<Path> fileVisitor) throws IOException {
-        try (FileSystem fileSystem = FileSystems.newFileSystem(zipFile, Reflections.getContextClassLoader())) {
+        FileSystem fileSystem = FileSystems.newFileSystem(zipFile, Reflections.getContextClassLoader());
+        try {
             Files.walkFileTree(fileSystem.getPath("/"), fileVisitor);
         } catch (ZipError e){
             LOGGER.warn("Can't handle file: " + zipFile, e);
+        } finally {
+            fileSystem.close();
         }
         return zipFile;
     }

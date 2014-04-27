@@ -69,7 +69,7 @@ public class DefaultScanner implements Scanner {
                 }
             }
         };
-        this.acceptedClassNames = new HashSet<>();
+        this.acceptedClassNames = new HashSet<String>();
     }
 
     @Override public Collection<Class<?>> scan() throws IOException {
