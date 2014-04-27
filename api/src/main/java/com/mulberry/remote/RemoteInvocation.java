@@ -21,9 +21,9 @@ public class RemoteInvocation implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String methodName;
-    private Class<?>[] parameterTypes;
-    private Object[] arguments;
+    private final String methodName;
+    private final Class<?>[] parameterTypes;
+    private final Object[] arguments;
 
     public RemoteInvocation(String methodName, Class<?>[] parameterTypes, Object[] arguments) {
         this.methodName = methodName;

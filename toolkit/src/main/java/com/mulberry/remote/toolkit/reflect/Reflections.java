@@ -129,6 +129,38 @@ public final class Reflections {
         }
     }
 
+    public static Class<?> classForName(String name) {
+        return classForName(name, getContextClassLoader());
+    }
+
+    public static Class<?> classForName(String name, ClassLoader cl) {
+        if (cl != null) {
+            try {
+                return Class.forName(name, false, cl);
+            } catch (ClassNotFoundException ex) {
+            }
+        }
+        try {
+            return Class.forName(name);
+        } catch (ClassNotFoundException ex) {
+        }
+        return null;
+    }
+
+    public static Class<?> classForNameWithException(String name) throws ClassNotFoundException {
+        return classForNameWithException(name, getContextClassLoader());
+    }
+
+    public static Class<?> classForNameWithException(String name, ClassLoader cl) throws ClassNotFoundException {
+        if (cl != null) {
+            try {
+                return Class.forName(name, false, cl);
+            } catch (ClassNotFoundException ex) {
+            }
+        }
+        return Class.forName(name);
+    }
+
 
     private static class BeanCopierKey{
         public final Class<?> fromClass, toClass;

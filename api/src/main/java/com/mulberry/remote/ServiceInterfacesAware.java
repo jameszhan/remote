@@ -5,15 +5,18 @@
  */
 package com.mulberry.remote;
 
+import java.util.Set;
+
 /**
  * Created with IntelliJ IDEA.
  *
  * @author zizhi.zhzzh
  *         Date: 4/27/14
- *         Time: 6:29 AM
+ *         Time: 5:53 PM
  */
-public interface RemoteInvocationHandler {
+public interface ServiceInterfacesAware {
 
-    RemoteInvocationResult invoke(RemoteInvocation invocation) throws Exception;
+    Set<Class<?>> getInterfaces() throws Exception;
 
 }
+

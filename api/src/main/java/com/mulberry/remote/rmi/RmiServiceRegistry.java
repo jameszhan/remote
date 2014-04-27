@@ -8,13 +8,11 @@ package com.mulberry.remote.rmi;
 import com.mulberry.remote.RemoteProxyFactory;
 import org.apache.log4j.Logger;
 
-import java.rmi.AlreadyBoundException;
-import java.rmi.NotBoundException;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -24,8 +22,10 @@ import java.rmi.server.UnicastRemoteObject;
  *         Time: 8:59 AM
  */
 public class RmiServiceRegistry {
+    private RmiServiceRegistry() {}
 
     private final static Logger LOGGER = Logger.getLogger(RmiServiceRegistry.class);
+    private final static String RMI_PREFIX = "rmi://";
     private static Registry     registry;
 
     static {
@@ -36,25 +36,30 @@ public class RmiServiceRegistry {
         }
     }
 
-    private RmiServiceRegistry() {
+    public static Object lookup(String name) throws Exception {
+        return lookup(name, null);
     }
 
-    public static Object lookup(String name) throws RemoteException, NotBoundException {
-        Remote stub = registry.lookup(name);
-        if(stub instanceof RmiInvocationHandler){
-            return getProxy((RmiInvocationHandler)stub);
+    public static <T> T lookup(String name, Class<T> ifc) throws Exception {
+        if(null == name){
+            return null;
         }
-        return stub;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T lookup(String name, Class<T> ifc) throws RemoteException, NotBoundException {
-        Object stub = lookup(name);
+        Remote stub = null;
+        if(name.startsWith(RMI_PREFIX)){
+            stub = Naming.lookup(name);
+        }else{
+            if(registry != null){
+                stub = registry.lookup(name);
+            }
+        }
+        if(stub instanceof RmiInvocationHandler){
+            return getProxy((RmiInvocationHandler)stub, ifc);
+        }
         return (T) stub;
     }
 
-    public static void bind(String name, Object obj) throws RemoteException, AlreadyBoundException {
-        registry.bind(name, getRemoteObject(obj));
+    public static void bind(String serviceName, Object serviceInstance) throws RemoteException, AlreadyBoundException {
+        registry.bind(serviceName, getRemoteObject(serviceInstance));
     }
 
     public static void unbind(String name) throws RemoteException, NotBoundException{
@@ -64,6 +69,11 @@ public class RmiServiceRegistry {
     public static void rebind(String name, Object obj) throws RemoteException {
         registry.rebind(name, getRemoteObject(obj));
     }
+
+    public static String[] list() throws RemoteException {
+        return registry.list();
+    }
+
 
     private static Remote getRemoteObject(Object obj) throws RemoteException{
         Remote remote = null;
@@ -80,11 +90,11 @@ public class RmiServiceRegistry {
 
     protected static Registry getRegistry() throws RemoteException {
 
-        int registryPort = Registry.REGISTRY_PORT;
+        int registryPort;
         try {
             registryPort = Integer.parseInt(System.getProperty("RMI_REGISTRY_PORT"));
         } catch (NumberFormatException e) {
-            // ignore.
+            registryPort = Registry.REGISTRY_PORT;
         }
 
         if (LOGGER.isInfoEnabled()) {
@@ -105,7 +115,11 @@ public class RmiServiceRegistry {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T getProxy(RmiInvocationHandler stub) throws RemoteException {
-        return (T) new RemoteProxyFactory(stub, stub.getInterfaces()).getProxy();
+    private static <T> T getProxy(RmiInvocationHandler stub, Class<T> ifc) throws Exception {
+        Set<Class<?>> ifcs = stub.getInterfaces();
+        if(ifc != null){
+            ifcs.add(ifc);
+        }
+        return (T) new RemoteProxyFactory(stub, ifcs.toArray(new Class<?>[ifcs.size()])).getProxy();
     }
 }

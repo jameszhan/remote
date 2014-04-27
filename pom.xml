@@ -342,6 +342,7 @@
     <modules>
         <module>./toolkit</module>
         <module>./api</module>
+        <module>./httpinvoker</module>
     </modules>
 
 </project>

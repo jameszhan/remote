@@ -5,10 +5,13 @@
  */
 package com.mulberry.remote.rmi;
 
+import com.google.common.collect.Sets;
 import com.mulberry.remote.RemoteInvocation;
+import com.mulberry.remote.RemoteInvocationResult;
 
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.RemoteException;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -26,13 +29,20 @@ public class RmiInvocationWrapper implements RmiInvocationHandler {
     }
 
     @Override
-    public Class<?>[] getInterfaces() {
-        return wrappedObject.getClass().getInterfaces();
+    public Set<Class<?>> getInterfaces() {
+        return Sets.newHashSet(wrappedObject.getClass().getInterfaces());
     }
 
     @Override
-    public Object invoke(RemoteInvocation invocation) throws RemoteException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        return invocation.invoke(wrappedObject);
+    public RemoteInvocationResult invoke(RemoteInvocation invocation) {
+        try {
+            Object value = invocation.invoke(wrappedObject);
+            return new RemoteInvocationResult(value);
+        } catch (Throwable t) {
+            if(t instanceof InvocationTargetException){
+                t = ((InvocationTargetException) t).getTargetException();
+            }
+            return new RemoteInvocationResult(t);
+        }
     }
-
 }

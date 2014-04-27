@@ -14,7 +14,7 @@ public final class RmiInvocationWrapper_Stub
     
     static {
 	try {
-	    $method_getInterfaces_0 = com.mulberry.remote.rmi.RmiInvocationHandler.class.getMethod("getInterfaces", new java.lang.Class[] {});
+	    $method_getInterfaces_0 = com.mulberry.remote.ServiceInterfacesAware.class.getMethod("getInterfaces", new java.lang.Class[] {});
 	    $method_invoke_1 = com.mulberry.remote.RemoteInvocationHandler.class.getMethod("invoke", new java.lang.Class[] {com.mulberry.remote.RemoteInvocation.class});
 	} catch (java.lang.NoSuchMethodException e) {
 	    throw new java.lang.NoSuchMethodError(
@@ -30,40 +30,18 @@ public final class RmiInvocationWrapper_Stub
     // methods from remote interfaces
     
     // implementation of getInterfaces()
-    public java.lang.Class[] getInterfaces()
-	throws java.rmi.RemoteException
+    public java.util.Set getInterfaces()
+	throws java.lang.Exception
     {
-	try {
-	    Object $result = ref.invoke(this, $method_getInterfaces_0, null, 1135919120760853306L);
-	    return ((java.lang.Class[]) $result);
-	} catch (java.lang.RuntimeException e) {
-	    throw e;
-	} catch (java.rmi.RemoteException e) {
-	    throw e;
-	} catch (java.lang.Exception e) {
-	    throw new java.rmi.UnexpectedException("undeclared checked exception", e);
-	}
+	Object $result = ref.invoke(this, $method_getInterfaces_0, null, -8574265364247758665L);
+	return ((java.util.Set) $result);
     }
     
     // implementation of invoke(RemoteInvocation)
-    public java.lang.Object invoke(com.mulberry.remote.RemoteInvocation $param_RemoteInvocation_1)
-	throws java.lang.IllegalAccessException, java.lang.NoSuchMethodException, java.lang.reflect.InvocationTargetException, java.rmi.RemoteException
+    public com.mulberry.remote.RemoteInvocationResult invoke(com.mulberry.remote.RemoteInvocation $param_RemoteInvocation_1)
+	throws java.lang.Exception
     {
-	try {
-	    Object $result = ref.invoke(this, $method_invoke_1, new java.lang.Object[] {$param_RemoteInvocation_1}, 4812422104746797265L);
-	    return ((java.lang.Object) $result);
-	} catch (java.lang.RuntimeException e) {
-	    throw e;
-	} catch (java.rmi.RemoteException e) {
-	    throw e;
-	} catch (java.lang.IllegalAccessException e) {
-	    throw e;
-	} catch (java.lang.NoSuchMethodException e) {
-	    throw e;
-	} catch (java.lang.reflect.InvocationTargetException e) {
-	    throw e;
-	} catch (java.lang.Exception e) {
-	    throw new java.rmi.UnexpectedException("undeclared checked exception", e);
-	}
+	Object $result = ref.invoke(this, $method_invoke_1, new java.lang.Object[] {$param_RemoteInvocation_1}, -1992467752225176671L);
+	return ((com.mulberry.remote.RemoteInvocationResult) $result);
     }
 }

@@ -32,34 +32,34 @@ public class RmiInvocationTests {
     @BeforeClass
     public static void bindService() throws RemoteException{
         RmiServiceRegistry.rebind("String", "Hello World!");
-        RmiServiceRegistry.rebind("Hello", new HelloServiceImpl());
+        RmiServiceRegistry.rebind("HelloService", new HelloServiceImpl());
         RmiServiceRegistry.rebind("StandardRemote", new StandardRemoteImpl());
-
     }
 
     @AfterClass
     public static void unbindService() throws NotBoundException, RemoteException {
         RmiServiceRegistry.unbind("String");
-        RmiServiceRegistry.unbind("Hello");
+        RmiServiceRegistry.unbind("HelloService");
+        RmiServiceRegistry.unbind("StandardRemote");
     }
 
     @Test
-    public void testStringService() throws RemoteException, NotBoundException {
+    public void testStringService() throws Exception {
         CharSequence cs = RmiServiceRegistry.lookup("String", CharSequence.class);
         Assert.assertEquals(cs.toString(), "Hello World!");
         Assert.assertEquals(cs.length(), 12);
     }
 
     @Test
-    public void testHelloService() throws RemoteException, NotBoundException {
-        HelloService hs = RmiServiceRegistry.lookup("Hello", HelloService.class);
+    public void testHelloService() throws Exception {
+        HelloService hs = RmiServiceRegistry.lookup("rmi://localhost:1099/HelloService", HelloService.class);
         String echo = hs.echo("Hello World!");
         Assert.assertEquals(echo, "HelloService echo: Hello World!");
         Assert.assertEquals(hs.sayHello("James"), "Hello James");
     }
 
     @Test
-    public void testStandardRemote() throws RemoteException, NotBoundException {
+    public void testStandardRemote() throws Exception {
         StandardRemote sr = RmiServiceRegistry.lookup("StandardRemote", StandardRemote.class);
         String echo = sr.echo("Hello World");
         Assert.assertEquals(echo, "Standard Remote Service Echo: Hello World.");

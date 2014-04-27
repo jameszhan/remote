@@ -8,6 +8,9 @@ package com.mulberry.remote;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mulberry.remote.toolkit.reflect.Reflections;
 
 /**
@@ -21,7 +24,11 @@ public class RemoteProxyFactory implements InvocationHandler {
 
     private final RemoteInvocationHandler stub;
     private final Class<?>[] proxiedInterfaces;
-    private Object proxy;
+
+
+    public RemoteProxyFactory(RemoteInvocationHandler stub, String... proxiedInterfaceNames) {
+        this(stub, getClassesByNames(proxiedInterfaceNames));
+    }
 
 
     public RemoteProxyFactory(RemoteInvocationHandler stub, Class<?>... proxiedInterfaces) {
@@ -30,19 +37,30 @@ public class RemoteProxyFactory implements InvocationHandler {
     }
 
     public Object getProxy(){
-        proxy = Proxy.newProxyInstance(Reflections.getContextClassLoader(), proxiedInterfaces, this);
-        return proxy;
+        return Proxy.newProxyInstance(Reflections.getContextClassLoader(), proxiedInterfaces, this);
     }
 
+
     public Object getProxy(ClassLoader classloader){
-        proxy = Proxy.newProxyInstance(classloader, proxiedInterfaces, this);
-        return proxy;
+        return Proxy.newProxyInstance(classloader, proxiedInterfaces, this);
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         RemoteInvocation invocation = new RemoteInvocation(method.getName(), method.getParameterTypes(), args);
-        return stub.invoke(invocation);
+        RemoteInvocationResult result = stub.invoke(invocation);
+        return result.getValue();
+    }
+
+    private static Class<?>[] getClassesByNames(String... classNames){
+        List<Class<?>> classes = new ArrayList<Class<?>>();
+        for(String className : classNames){
+            Class<?> clazz = Reflections.classForName(className);
+            if (clazz != null){
+                classes.add(clazz);
+            }
+        }
+        return classes.toArray(new Class<?>[classes.size()]);
     }
 
 }

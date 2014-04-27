@@ -6,6 +6,7 @@
 package com.mulberry.remote.rmi;
 
 import com.mulberry.remote.RemoteInvocationHandler;
+import com.mulberry.remote.ServiceInterfacesAware;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -17,8 +18,6 @@ import java.rmi.RemoteException;
  *         Date: 4/27/14
  *         Time: 6:45 AM
  */
-public interface RmiInvocationHandler extends RemoteInvocationHandler, Remote {
-
-    Class<?>[] getInterfaces() throws RemoteException;
+public interface RmiInvocationHandler extends RemoteInvocationHandler, ServiceInterfacesAware, Remote {
 
 }
