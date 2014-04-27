@@ -15,5 +15,5 @@ target/
 target/*
 toolkit/target/
 toolkit/target/*
-api/target/
-api/target/*
+remote-api/target/
+remote-api/target/*
