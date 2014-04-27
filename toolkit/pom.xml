@@ -27,23 +27,9 @@
             <artifactId>cglib</artifactId>
             <optional>true</optional>
         </dependency>
-        <!--
         <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.9-RC1</version>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-messaging</artifactId>
-            <version>4.0.3.RELEASE</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba.china.shared</groupId>
-            <artifactId>pivot.service.common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        -->
     </dependencies>
 </project>

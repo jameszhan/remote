@@ -14,6 +14,8 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.Opcodes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -31,6 +33,7 @@ import java.util.regex.Pattern;
  *         Time: 2:47 AM
  */
 public class DefaultScanner implements Scanner {
+    private final static Logger LOGGER = LoggerFactory.getLogger(DefaultScanner.class);
     private final URLClassLoader classLoader;
     private final Set<String> packages;
     private final Predicate<Path> predicate;
@@ -65,7 +68,7 @@ public class DefaultScanner implements Scanner {
                 try {
                     new ClassReader(Files.newInputStream(path)).accept(new AnnotatedClassVisitor(), 0);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.error("Can't handle class: " + path, e);
                 }
             }
         };

@@ -129,6 +129,10 @@ public final class Reflections {
         }
     }
 
+    public static <T> T instantiate(Class<T> clazz) throws IllegalAccessException, InstantiationException {
+        return clazz.newInstance();
+    }
+
     public static Class<?> classForName(String name) {
         return classForName(name, getContextClassLoader());
     }
