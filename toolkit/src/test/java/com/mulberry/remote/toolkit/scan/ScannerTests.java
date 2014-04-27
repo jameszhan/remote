@@ -6,30 +6,11 @@
 package com.mulberry.remote.toolkit.scan;
 
 import com.google.common.annotations.GwtCompatible;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.base.Strings;
 import com.google.common.collect.*;
-import com.google.common.io.Files;
-import com.google.common.reflect.ClassPath;
-import com.mulberry.remote.toolkit.base.Consumer;
-import com.mulberry.remote.toolkit.reflect.Reflections;
 import junit.framework.Assert;
 import org.junit.Test;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.File;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.net.URI;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.

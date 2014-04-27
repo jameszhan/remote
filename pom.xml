@@ -341,6 +341,7 @@
 
     <modules>
         <module>./toolkit</module>
+        <module>./test-common</module>
         <module>./api</module>
         <module>./httpinvoker</module>
     </modules>

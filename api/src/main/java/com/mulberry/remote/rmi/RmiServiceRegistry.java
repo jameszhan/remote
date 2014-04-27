@@ -74,7 +74,6 @@ public class RmiServiceRegistry {
         return registry.list();
     }
 
-
     private static Remote getRemoteObject(Object obj) throws RemoteException{
         Remote remote = null;
         if (obj instanceof Remote) {
