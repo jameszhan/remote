@@ -8,7 +8,7 @@
   xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://jaxws.remote.apple.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://jaxws.remote.apple.com/" name="HelloService">
 <types>
 <xsd:schema>
-<xsd:import namespace="http://jaxws.remote.apple.com/" schemaLocation="./hello.xsd" />
+<xsd:import namespace="http://jaxws.remote.apple.com/" schemaLocation="hello.xsd" />
 </xsd:schema>
 </types>
 <message name="greet">

@@ -39,46 +39,13 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.caucho</groupId>
-            <artifactId>hessian</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.xml</groupId>
-            <artifactId>jaxws-rt</artifactId>
-            <version>2.0EA3</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.jws</groupId>
-                    <artifactId>jsr181-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
             <version>4.2</version>
         </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-nio-framework</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-webserver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-comet-webserver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-cometd-webserver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
-        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -342,11 +309,11 @@
     <modules>
         <module>./toolkit</module>
         <module>./test-common</module>
-        <module>./remote-api</module>
-        <module>./remote-httpinvoker</module>
-        <module>./remote-caucho</module>
-        <module>./remote-jaxws</module>
-        <module>./remote-jaxrs</module>
+        <module>./remote/api</module>
+        <module>./remote/httpinvoker</module>
+        <module>./remote/caucho</module>
+        <module>./remote/jaxws</module>
+        <module>./remote/jaxrs</module>
     </modules>
 
 </project>

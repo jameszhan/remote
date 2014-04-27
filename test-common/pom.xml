@@ -13,5 +13,26 @@
     <packaging>jar</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-nio-framework</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-webserver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-comet-webserver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.grizzly</groupId>
+            <artifactId>grizzly-cometd-webserver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+        </dependency>
+
     </dependencies>
 </project>
