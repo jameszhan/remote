@@ -5,6 +5,12 @@
  */
 package com.mulberry.remote;
 
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+import javax.jws.WebResult;
+import javax.jws.WebService;
+import javax.jws.soap.SOAPBinding;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -12,10 +18,16 @@ package com.mulberry.remote;
  *         Date: 4/27/14
  *         Time: 9:02 AM
  */
+@WebService(name="HelloService")
+@SOAPBinding(parameterStyle= SOAPBinding.ParameterStyle.BARE)
 public interface HelloService {
 
-    String sayHello(String message);
+    @WebMethod(operationName="helloMethod")
+    @WebResult(name="helloResponse", partName="helloResponsePartName")
+    String sayHello(@WebParam(name="helloRequest", partName="helloRequestPartName")String message);
 
-    String echo(String message);
+    @WebMethod(operationName="echoMethod")
+    @WebResult(header=true, name="echoResponse", partName="echoResponsePartName")
+    String echo(@WebParam(name="echoRequest", partName="echoRequestPartName") String message);
 
 }

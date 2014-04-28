@@ -6,11 +6,11 @@
 package com.mulberry.remote.caucho;
 
 import com.caucho.hessian.client.HessianProxyFactory;
-import com.caucho.hessian.server.HessianServlet;
 import com.mulberry.remote.HelloService;
-import com.sun.grizzly.http.embed.GrizzlyWebServer;
-import com.sun.grizzly.http.servlet.ServletAdapter;
 import junit.framework.Assert;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.servlet.ServletRegistration;
+import org.glassfish.grizzly.servlet.WebappContext;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -26,27 +26,31 @@ import java.net.MalformedURLException;
  */
 public class CauchoTests {
 
-    private static GrizzlyWebServer ws = new GrizzlyWebServer(8080, "./site");
+    private final static int PORT = 8765;
+    private static HttpServer httpServer = HttpServer.createSimpleServer(".", PORT);
 
     @BeforeClass
     public static void setUpWebServer() throws Exception {
-        ServletAdapter sa = new ServletAdapter();
-        HessianServlet hs = new HessianServlet();
-        sa.addInitParameter("home-class", "com.mulberry.remote.HelloServiceImpl");
-        sa.addInitParameter("home-api", "com.mulberry.remote.HelloService");
-        sa.setServletInstance(hs);
-        ws.addGrizzlyAdapter(sa, new String[] { "*.hs", "/hessian" });
-        ws.start();
+        WebappContext webappContext = new WebappContext("httpInvoker");
+
+        ServletRegistration registration = webappContext.addServlet("hessian", "com.caucho.hessian.server.HessianServlet");
+        registration.setInitParameter("service-class", "com.mulberry.remote.HelloServiceImpl");
+        registration.setInitParameter("load-on-startup", "1");
+        registration.addMapping("*.hs", "/hessian");
+
+        webappContext.deploy(httpServer);
+
+        httpServer.start();
     }
 
     @AfterClass
     public static void closeWebServer() throws Exception {
-        ws.stop();
+        httpServer.shutdown();
     }
 
     @Test
     public void helloService() throws MalformedURLException {
-        String url = "http://localhost:8080/hessian";
+        String url = "http://localhost:8765/hessian";
         HessianProxyFactory factory = new HessianProxyFactory();
 
         HelloService hs = (HelloService) factory.create(HelloService.class, url);

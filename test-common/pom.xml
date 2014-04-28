@@ -12,27 +12,59 @@
     <artifactId>mulberry-test-common</artifactId>
     <packaging>jar</packaging>
 
+    <build>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
+        <scriptSourceDirectory>src/main/scripts</scriptSourceDirectory>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
+    </build>
+
     <dependencies>
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-nio-framework</artifactId>
+            <groupId>org.glassfish.grizzly</groupId>
+            <artifactId>grizzly-http-servlet</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-webserver</artifactId>
+            <groupId>org.glassfish.grizzly</groupId>
+            <artifactId>grizzly-http-server</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-comet-webserver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.grizzly</groupId>
-            <artifactId>grizzly-cometd-webserver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.freemarker</groupId>
-            <artifactId>freemarker</artifactId>
-        </dependency>
+
+
+        <!--
+           <dependency>
+               <groupId>com.sun.grizzly</groupId>
+               <artifactId>grizzly-nio-framework</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>com.sun.grizzly</groupId>
+               <artifactId>grizzly-webserver</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>com.sun.grizzly</groupId>
+               <artifactId>grizzly-comet-webserver</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>com.sun.grizzly</groupId>
+               <artifactId>grizzly-cometd-webserver</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>org.freemarker</groupId>
+               <artifactId>freemarker</artifactId>
+           </dependency>
+        -->
 
     </dependencies>
 </project>

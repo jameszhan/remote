@@ -142,11 +142,13 @@ public final class Reflections {
             try {
                 return Class.forName(name, false, cl);
             } catch (ClassNotFoundException ex) {
+                LOGGER.debug("Can't find class {} in {}", name, cl);
             }
         }
         try {
             return Class.forName(name);
         } catch (ClassNotFoundException ex) {
+            LOGGER.debug("Can't find class {}", name);
         }
         return null;
     }
@@ -160,6 +162,7 @@ public final class Reflections {
             try {
                 return Class.forName(name, false, cl);
             } catch (ClassNotFoundException ex) {
+                LOGGER.debug("Can't find class {} in {}", name, cl);
             }
         }
         return Class.forName(name);

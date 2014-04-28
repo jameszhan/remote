@@ -1,5 +1,6 @@
 package com.mulberry.embed.webserver;
 
+/*
 import com.sun.grizzly.tcp.http11.GrizzlyAdapter;
 import com.sun.grizzly.tcp.http11.GrizzlyRequest;
 import com.sun.grizzly.tcp.http11.GrizzlyResponse;
@@ -11,13 +12,6 @@ import java.io.StringWriter;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-/**
- * Created with IntelliJ IDEA.
- *
- * @author zizhi.zhzzh
- *         Date: 4/27/14
- *         Time: 10:07 PM
- */
 public class DebugGrizzlyAdapter extends GrizzlyAdapter {
 
     @Override
@@ -170,3 +164,4 @@ public class DebugGrizzlyAdapter extends GrizzlyAdapter {
     }
 
 }
+*/

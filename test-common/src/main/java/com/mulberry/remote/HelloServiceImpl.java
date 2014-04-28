@@ -5,6 +5,8 @@
  */
 package com.mulberry.remote;
 
+import javax.jws.WebService;
+
 /**
  * Created with IntelliJ IDEA.
  *
@@ -12,6 +14,7 @@ package com.mulberry.remote;
  *         Date: 4/27/14
  *         Time: 9:03 AM
  */
+@WebService(endpointInterface="com.mulberry.remote.HelloService")
 public class HelloServiceImpl implements HelloService {
 
     @Override public String sayHello(String message) {

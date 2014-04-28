@@ -6,6 +6,8 @@
 package com.mulberry.remote.httpinvoker;
 
 import com.mulberry.toolkit.reflect.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -24,6 +26,7 @@ import java.io.IOException;
 public class HttpInvokerServlet extends HttpServlet {
 
     private static final long serialVersionUID = 4096020903260070242L;
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpInvokerServlet.class);
 
     private static final String SERVICE_CLASS_NAME = "service-class";
     private static final String REQUEST_HANDLER_CLASS = "request-handler-class";
@@ -52,6 +55,7 @@ public class HttpInvokerServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
+            LOGGER.debug("Received request {}", request.getRequestURI());
             handler.handle(request, response);
         } catch (Exception e) {
             throw new ServletException(e);

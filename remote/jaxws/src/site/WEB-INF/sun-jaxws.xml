@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<endpoints xmlns='http://java.sun.com/xml/ns/jax-ws/ri/runtime' version='2.0'>
+    <endpoint name='calculatorEndpoint' implementation='com.mulberry.remote.jaxws.demo.CalculatorImpl' url-pattern='/calc'/>
+    <endpoint name='helloEndpoint' implementation='com.mulberry.remote.HelloServiceImpl'  url-pattern='/hello'/>
+</endpoints>
+
+

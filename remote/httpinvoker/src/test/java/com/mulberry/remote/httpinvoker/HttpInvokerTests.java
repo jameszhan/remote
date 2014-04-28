@@ -7,8 +7,9 @@ package com.mulberry.remote.httpinvoker;
 
 import com.mulberry.remote.HelloService;
 import com.mulberry.toolkit.http.HttpConstants;
-import com.sun.grizzly.http.embed.GrizzlyWebServer;
-import com.sun.grizzly.http.servlet.ServletAdapter;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.servlet.ServletRegistration;
+import org.glassfish.grizzly.servlet.WebappContext;
 import org.junit.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -28,37 +29,42 @@ import java.net.URLConnection;
  */
 public class HttpInvokerTests {
 
-    private static GrizzlyWebServer ws = new GrizzlyWebServer(8080, "./webapp");
+    private final static int PORT = 8765;
+    private static HttpServer webServer = HttpServer.createSimpleServer(".", PORT);
 
     @BeforeClass
     public static void setUpWebServer() throws Exception {
-        ServletAdapter hisa = new ServletAdapter(new HttpInvokerServlet());
-        hisa.addInitParameter("service-class", "com.mulberry.remote.HelloServiceImpl");
-        hisa.setProperty(ServletAdapter.LOAD_ON_STARTUP, 1);
-        ws.addGrizzlyAdapter(hisa, new String[] { "*.httpinvoker", "/httpinvoker/*" });
+        WebappContext webappContext = new WebappContext("httpInvoker");
 
-        ServletAdapter rmisa = new ServletAdapter(new HttpInvokerServlet());
-        rmisa.addInitParameter("service-class", "com.mulberry.remote.HelloServiceImpl");
-        rmisa.addInitParameter("request-handler-class", "com.mulberry.remote.httpinvoker.RmiRequestHandler");
-        ws.addGrizzlyAdapter(rmisa, new String[]{"/rmi/*"});
+        ServletRegistration commonRegistration = webappContext.addServlet("common", new HttpInvokerServlet());
+        commonRegistration.setInitParameter("service-class", "com.mulberry.remote.HelloServiceImpl");
+        commonRegistration.setInitParameter("load-on-startup", "1");
+        commonRegistration.addMapping("*.httpinvoker", "/httpinvoker/*");
 
-        ws.start();
+        ServletRegistration rmiRegistration = webappContext.addServlet("rmi", new HttpInvokerServlet());
+        rmiRegistration.setInitParameter("load-on-startup", "1");
+        rmiRegistration.setInitParameter("service-class", "com.mulberry.remote.HelloServiceImpl");
+        rmiRegistration.setInitParameter("request-handler-class", "com.mulberry.remote.httpinvoker.RmiRequestHandler");
+        rmiRegistration.addMapping("/rmi/*");
+        webappContext.deploy(webServer);
+
+        webServer.start();
     }
 
     @AfterClass
     public static void closeWebServer() throws Exception {
-        ws.stop();
+        webServer.shutdown();
     }
 
     @Test
     public void httpInvoker() throws Exception {
-        HelloService helloService = HttpInvokerClient.getProxy("http://localhost:8080/httpinvoker", HelloService.class);
+        HelloService helloService = HttpInvokerClient.getProxy("http://localhost:8765/httpinvoker", HelloService.class);
         Assert.assertEquals(helloService.echo("Good"), "HelloService echo: Good");
     }
 
     @Test
     public void rmi() throws Exception {
-        String serviceUrl = "http://localhost:8080/rmi";
+        String serviceUrl = "http://localhost:8765/rmi";
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(os);
         oos.writeObject("RMI");
