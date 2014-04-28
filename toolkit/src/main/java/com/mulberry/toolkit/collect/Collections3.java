@@ -3,11 +3,12 @@
  * Alibaba.com ("Confidential Information"). You shall not disclose such Confidential Information and shall use it only
  * in accordance with the terms of the license agreement you entered into with Alibaba.com.
  */
-package com.mulberry.toolkit.base;
+package com.mulberry.toolkit.collect;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Range;
+import com.mulberry.toolkit.base.Consumer;
 
 import java.util.Collection;
 import java.util.List;

@@ -4,23 +4,23 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>com.mulberry</groupId>
-        <artifactId>mulberry</artifactId>
+        <artifactId>athena</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>mulberry-remote-httpinvoker</artifactId>
+    <artifactId>athena-remote-httpinvoker</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
             <groupId>com.mulberry</groupId>
-            <artifactId>mulberry-remote-api</artifactId>
+            <artifactId>athena-remote-api</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.mulberry</groupId>
-            <artifactId>mulberry-test-common</artifactId>
+            <artifactId>athena-test-common</artifactId>
             <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>

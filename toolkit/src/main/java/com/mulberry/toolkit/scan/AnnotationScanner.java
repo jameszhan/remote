@@ -9,14 +9,13 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.mulberry.toolkit.base.Consumer;
+import com.mulberry.toolkit.base.Consumers;
 import com.mulberry.toolkit.reflect.Reflections;
-import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.Opcodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URLClassLoader;
@@ -32,52 +31,52 @@ import java.util.regex.Pattern;
  *         Date: 4/27/14
  *         Time: 2:47 AM
  */
-public class DefaultScanner implements Scanner {
-    private final static Logger LOGGER = LoggerFactory.getLogger(DefaultScanner.class);
+public class AnnotationScanner implements Scanner {
+    private final static Logger LOGGER = LoggerFactory.getLogger(AnnotationScanner.class);
     private final URLClassLoader classLoader;
     private final Set<String> packages;
     private final Predicate<Path> predicate;
-    private final Set<String> annotations;
     private Set<String> acceptedClassNames;
 
     private Consumer<Path> consumer;
 
-    public DefaultScanner(Set<String> packages, Class<? extends Annotation>... annotations) {
+    public AnnotationScanner(Set<String> packages, Class<? extends Annotation>... annotations) {
         this(null, packages, null, Arrays.asList(annotations));
     }
 
-    public DefaultScanner(Set<String> packages, Collection<Class<? extends Annotation>> annotations) {
+    public AnnotationScanner(Set<String> packages, Collection<Class<? extends Annotation>> annotations) {
         this(null, packages, null, annotations);
     }
 
-    public DefaultScanner(URLClassLoader classLoader, Set<String> packages, Collection<Class<? extends Annotation>> annotations) {
+    public AnnotationScanner(URLClassLoader classLoader, Set<String> packages, Collection<Class<? extends Annotation>> annotations) {
         this(classLoader, packages, null, annotations);
     }
 
-    public DefaultScanner(URLClassLoader classLoader, Set<String> packages, String pattern, Collection<Class<? extends Annotation>> annotations) {
+    public AnnotationScanner(URLClassLoader classLoader, Set<String> packages, String pattern, final Collection<Class<? extends Annotation>> annotations) {
         if (classLoader != null) {
             this.classLoader = classLoader;
         } else {
             this.classLoader = (URLClassLoader)Reflections.getContextClassLoader();
         }
         this.packages = packages;
-        this.annotations = getAnnotationSet(annotations);
         this.predicate = new PathPatternPredicate(pattern);
+        this.acceptedClassNames = new HashSet<String>();
         this.consumer = new Consumer<Path>() {
             @Override public void accept(Path path) {
                 try {
-                    new ClassReader(Files.newInputStream(path)).accept(new AnnotatedClassVisitor(), 0);
+                    new ClassReader(Files.newInputStream(path)).accept(new DefaultClassVisitor(
+                            new AnnotatedClassInfoPredicate(getAnnotationSet(annotations)),
+                            Consumers.collect(acceptedClassNames)), 0);
                 } catch (Exception e) {
                     LOGGER.error("Can't handle class: " + path, e);
                 }
             }
         };
-        this.acceptedClassNames = new HashSet<String>();
     }
 
     @Override public Collection<Class<?>> scan() throws IOException {
         Scanners.scan(classLoader, packages, predicate, consumer);
-        return FluentIterable.from(acceptedClassNames).transform(new LoadClassFunction(classLoader)).toList();
+        return FluentIterable.from(acceptedClassNames).transform(new LoadClassFunction(classLoader)).toSet();
     }
 
     private Set<String> getAnnotationSet(Collection<Class<? extends Annotation>> annotations) {
@@ -87,6 +86,17 @@ public class DefaultScanner implements Scanner {
             }
         }).toSet();
     }
+
+    private static class AnnotatedClassInfoPredicate implements Predicate<DefaultClassVisitor.ClassInfo> {
+        private final Set<String> annotations;
+        private AnnotatedClassInfoPredicate(Set<String> annotations) {
+            this.annotations = annotations;
+        }
+        @Override public boolean apply(@Nullable DefaultClassVisitor.ClassInfo classInfo) {
+            return classInfo != null && classInfo.isScoped() && !Collections.disjoint(classInfo.getAnnotations(), annotations);
+        }
+    }
+
 
     private static class LoadClassFunction implements Function<String, Class<?>> {
         private final ClassLoader classLoader;
@@ -122,55 +132,6 @@ public class DefaultScanner implements Scanner {
         @Override public boolean apply(Path file) {
             return file != null && pattern.matcher(file.toString()).find();
         }
-    }
-
-    private final class AnnotatedClassVisitor extends ClassVisitor {
-        /**
-         * The name of the visited class.
-         */
-        private volatile String className;
-        /**
-         * True if the class has the correct scope
-         */
-        private volatile boolean isScoped;
-        /**
-         * True if the class has the correct declared annotations
-         */
-        private volatile boolean isAnnotated;
-
-        private AnnotatedClassVisitor() {
-            super(Opcodes.ASM4);
-        }
-
-        public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-            className = name;
-            isScoped = (access & Opcodes.ACC_PUBLIC) != 0;
-            isAnnotated = false;
-        }
-
-        public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-            isAnnotated |= annotations.contains(desc);
-            return null;
-        }
-
-        public void visitInnerClass(String name, String outerName, String innerName, int access) {
-            // If the name of the class that was visited is equal to the name of this visited inner class then
-            // this access field needs to be used for checking the scope of the inner class
-            if (className.equals(name)) {
-                isScoped = (access & Opcodes.ACC_PUBLIC) != 0;
-
-                // Inner classes need to be statically scoped
-                isScoped &= (access & Opcodes.ACC_STATIC) == Opcodes.ACC_STATIC;
-            }
-        }
-
-        public void visitEnd() {
-            if (isScoped && isAnnotated) {
-                // Correctly scoped and annotated add to the set of matching classes.
-                acceptedClassNames.add(className.replace("/", "."));
-            }
-        }
-
     }
 
 }

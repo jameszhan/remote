@@ -3,11 +3,11 @@
  * Alibaba.com ("Confidential Information"). You shall not disclose such Confidential Information and shall use it only
  * in accordance with the terms of the license agreement you entered into with Alibaba.com.
  */
-package com.mulberry.toolkit;
+package com.mulberry.toolkit.collect;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
-import com.mulberry.toolkit.base.Collections3;
+import com.mulberry.toolkit.collect.Collections3;
 import com.mulberry.toolkit.base.Consumer;
 import org.junit.Assert;
 import org.junit.Test;
