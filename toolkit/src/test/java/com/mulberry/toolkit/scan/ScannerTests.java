@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import javax.jws.WebService;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ import java.util.Set;
  *         Time: 9:43 AM
  */
 @WebService
-public class ScannerTests {
+public class ScannerTests implements Cloneable {
 
     @Test
     public void scanGwtCompatible() throws Exception {
@@ -34,32 +35,36 @@ public class ScannerTests {
     }
 
     @Test
-    public void scanTestClass() throws Exception {
+    public void scanAnnotations() throws Exception {
         Scanner scanner = new AnnotationScanner(ImmutableSet.of("com.mulberry.toolkit.scan"), GwtCompatible.class, WebService.class);
         Collection<Class<?>> classes = scanner.scan();
         Assert.assertNotNull(classes);
+        Assert.assertFalse(classes.isEmpty());
 
         Assert.assertTrue(classes.containsAll(ImmutableSet.of(ScannerTests.class, World.class)));
+        Assert.assertFalse(classes.contains(Hello.class));
+        Assert.assertFalse(classes.contains(HelloWorld.class));
+        Assert.assertFalse(classes.contains(WorldHello.class));
     }
 
-    @GwtCompatible
-    public class Hello {
+    @Test
+    public void scanInterfaces() throws Exception {
+        Scanner scanner = new InterfaceScanner(ImmutableSet.of("com.mulberry.toolkit.scan"), Serializable.class, Cloneable.class);
+        Collection<Class<?>> classes = scanner.scan();
+        Assert.assertNotNull(classes);
+        Assert.assertFalse(classes.isEmpty());
 
+        Assert.assertTrue(classes.containsAll(ImmutableSet.of(ScannerTests.class, World.class)));
+        Assert.assertFalse(classes.contains(Hello.class));
+        Assert.assertFalse(classes.contains(HelloWorld.class));
+        Assert.assertFalse(classes.contains(WorldHello.class));
     }
 
-    @WebService
-    @GwtCompatible
-    public static class World {
+    @GwtCompatible public class Hello implements Serializable, Cloneable {}
 
-    }
+    @WebService @GwtCompatible public static class World implements Cloneable {}
 
-    @GwtCompatible
-    class HelloWorld {
+    @GwtCompatible class HelloWorld implements Serializable {}
 
-    }
-
-    @GwtCompatible
-    static class WorldHello {
-
-    }
+    @GwtCompatible static class WorldHello implements Cloneable {}
 }

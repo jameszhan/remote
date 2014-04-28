@@ -6,6 +6,7 @@
 package com.mulberry.toolkit.scan;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.mulberry.toolkit.base.Consumer;
 import org.objectweb.asm.*;
@@ -69,9 +70,9 @@ public class DefaultClassVisitor extends ClassVisitor {
 
     public static class ClassInfo {
         private final String name;
-        private final String superName;
-        private final String[] interfaces;
         private final String signature;
+        private final String superName;
+        private final Set<String> interfaces;
         private final Set<String> annotations = Sets.newConcurrentHashSet();
 
         private boolean innerClass;
@@ -84,9 +85,9 @@ public class DefaultClassVisitor extends ClassVisitor {
 
         public ClassInfo(String name, String signature, String superName, String... interfaces) {
             this.name = name;
-            this.superName = superName;
-            this.interfaces = interfaces;
             this.signature = signature;
+            this.superName = superName;
+            this.interfaces = new ImmutableSet.Builder<String>().add(interfaces).build();
         }
 
         public boolean add(String annotation) {
@@ -117,7 +118,7 @@ public class DefaultClassVisitor extends ClassVisitor {
             return superName;
         }
 
-        public String[] getInterfaces() {
+        public Set<String> getInterfaces() {
             return interfaces;
         }
 
