@@ -60,6 +60,30 @@ public class ScannerTests implements Cloneable {
         Assert.assertFalse(classes.contains(WorldHello.class));
     }
 
+    @Test
+    public void annotatedBy() throws Exception {
+        Collection<Class<?>> classes = Scanners.annotatedBy("com.mulberry.toolkit.scan", GwtCompatible.class, WebService.class);
+        Assert.assertNotNull(classes);
+        Assert.assertFalse(classes.isEmpty());
+
+        Assert.assertTrue(classes.containsAll(ImmutableSet.of(ScannerTests.class, World.class)));
+        Assert.assertFalse(classes.contains(Hello.class));
+        Assert.assertFalse(classes.contains(HelloWorld.class));
+        Assert.assertFalse(classes.contains(WorldHello.class));
+    }
+
+    @Test
+    public void interfacedBy() throws Exception {
+        Collection<Class<?>> classes = Scanners.interfacedBy("com.mulberry.toolkit.scan", Serializable.class, Cloneable.class);
+        Assert.assertNotNull(classes);
+        Assert.assertFalse(classes.isEmpty());
+
+        Assert.assertTrue(classes.containsAll(ImmutableSet.of(ScannerTests.class, World.class)));
+        Assert.assertFalse(classes.contains(Hello.class));
+        Assert.assertFalse(classes.contains(HelloWorld.class));
+        Assert.assertFalse(classes.contains(WorldHello.class));
+    }
+
     @GwtCompatible public class Hello implements Serializable, Cloneable {}
 
     @WebService @GwtCompatible public static class World implements Cloneable {}

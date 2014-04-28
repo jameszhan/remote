@@ -20,10 +20,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -44,6 +46,14 @@ public final class Scanners {
     private static final Logger LOGGER = LoggerFactory.getLogger(Scanners.class);
     private static final Set<String> ZIP_FILE_FORMATS = ImmutableSet.of("jar", "zip", "war", "par", "ear");
     private static final Predicate<Path> IS_ZIP_FILE = new ExtensionPredicate(ZIP_FILE_FORMATS);
+
+    public static Collection<Class<?>> annotatedBy(String pkg, Class<? extends Annotation>... annotations) throws IOException{
+        return new AnnotationScanner(ImmutableSet.of(pkg), annotations).scan();
+    }
+
+    public static Collection<Class<?>> interfacedBy(String pkg, Class<?>... intefaces) throws IOException{
+        return new InterfaceScanner(ImmutableSet.of(pkg), intefaces).scan();
+    }
 
     public static void scan(URLClassLoader classLoader, Set<String> packages, final Predicate<Path> predicate, final Consumer<Path> consumer) throws IOException{
         for (String p : packages) {
