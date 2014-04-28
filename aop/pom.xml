@@ -9,28 +9,23 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>mulberry-toolkit</artifactId>
+    <artifactId>mulberry-aop</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
+            <groupId>com.mulberry</groupId>
+            <artifactId>mulberry-toolkit</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
+
         <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>jsr305</artifactId>
-            <optional>true</optional>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
         </dependency>
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

@@ -82,7 +82,11 @@
                 <version>5.0.2</version>
             </dependency>
 
-
+            <dependency>
+                <groupId>aopalliance</groupId>
+                <artifactId>aopalliance</artifactId>
+                <version>1.0</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.freemarker</groupId>
@@ -373,6 +377,7 @@
 
     <modules>
         <module>./toolkit</module>
+        <module>./aop</module>
         <module>./test-common</module>
         <module>./remote/api</module>
         <module>./remote/httpinvoker</module>

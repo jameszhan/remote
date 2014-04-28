@@ -14,12 +14,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import java.lang.reflect.Field;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.*;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -32,6 +37,8 @@ import java.util.concurrent.ExecutionException;
 public final class Reflections {
     private Reflections(){}
 
+    public static final String CGLIB_CLASS_SEPARATOR = "$$";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(Reflections.class);
     private static final LoadingCache<BeanCopierKey, BeanCopier> BEAN_COPIER_CACHE = CacheBuilder.newBuilder()
             .maximumSize(1000).build(new CacheLoader<BeanCopierKey, BeanCopier>() {
@@ -40,6 +47,7 @@ public final class Reflections {
             return BeanCopier.create(key.fromClass, key.toClass, false);
         }
     });
+
 
     public static ClassLoader getContextClassLoader() {
         return AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
@@ -53,6 +61,100 @@ public final class Reflections {
                 return cl;
             }
         });
+    }
+
+    public static <T> T instantiate(Class<T> clazz) throws IllegalAccessException, InstantiationException {
+        return clazz.newInstance();
+    }
+
+    public static <T> T instantiate(String clazzName) {
+        return instantiate(clazzName, getContextClassLoader());
+    }
+
+    public static <T> T instantiate(String clazzName, ClassLoader classLoader) {
+        try {
+            Class<?> clazz = Class.forName(clazzName, true, classLoader);
+            return (T)clazz.newInstance();
+        } catch (Throwable t) {
+            LOGGER.warn("Unable to load class " + clazzName, t);
+        }
+        return null;
+    }
+
+    public static Class<?> classForName(String name) {
+        return classForName(name, getContextClassLoader());
+    }
+
+    public static Class<?> classForName(String name, ClassLoader cl) {
+        if (cl != null) {
+            try {
+                return Class.forName(name, false, cl);
+            } catch (ClassNotFoundException ex) {
+                LOGGER.debug("Can't find class {} in {}", name, cl);
+            }
+        }
+        try {
+            return Class.forName(name);
+        } catch (ClassNotFoundException ex) {
+            LOGGER.debug("Can't find class {}", name);
+        }
+        return null;
+    }
+
+
+    public static Class<?> classForNameWithException(String name) throws ClassNotFoundException {
+        return classForNameWithException(name, getContextClassLoader());
+    }
+
+    public static Class<?> classForNameWithException(String name, ClassLoader cl) throws ClassNotFoundException {
+        if (cl != null) {
+            try {
+                return Class.forName(name, false, cl);
+            } catch (ClassNotFoundException ex) {
+                LOGGER.debug("Can't find class {} in {}", name, cl);
+            }
+        }
+        return Class.forName(name);
+    }
+
+
+    public static void makeAccessible(final Member m) {
+        if (m instanceof AccessibleObject && !Modifier.isPublic(m.getModifiers() & m.getDeclaringClass().getModifiers())) {
+            makeAccessible((AccessibleObject) m);
+        }
+    }
+
+
+    public static boolean isFinalizeMethod(Method method) {
+        return (method != null && method.getName().equals("finalize") && method.getParameterTypes().length == 0);
+    }
+
+    public static boolean isEqualsMethod(Method method) {
+        if (method == null || !method.getName().equals("equals")) {
+            return false;
+        }
+        Class<?>[] paramTypes = method.getParameterTypes();
+        return (paramTypes.length == 1 && paramTypes[0] == Object.class);
+    }
+
+    public static boolean isHashCodeMethod(Method method) {
+        return (method != null && method.getName().equals("hashCode") && method.getParameterTypes().length == 0);
+    }
+
+    public static boolean isJdkDynamicProxy(Object object) {
+        return (Proxy.isProxyClass(object.getClass()));
+    }
+
+    public static boolean isCglibProxy(Object object) {
+        return (isCglibProxyClass(object.getClass()));
+    }
+
+    public static boolean isCglibProxyClass(Class<?> clazz) {
+        return (clazz != null && isCglibProxyClassName(clazz.getName()));
+    }
+
+    public static boolean isCglibProxyClassName(String className) {
+        return (className != null && className.contains(CGLIB_CLASS_SEPARATOR));
     }
 
     public static Field getDeclaredField(Class<?> type, @Nonnull String name){
@@ -89,6 +191,15 @@ public final class Reflections {
             } catch (IllegalAccessException e) {
                 //This will never happen.
             }
+        }
+    }
+
+    public static void copy(Object target, Map<String, Object> props) {
+        if(props == null || props.isEmpty()){
+            return;
+        }
+        for(String key : props.keySet()){
+            setDeclaredField(target, key, props.get(key));
         }
     }
 
@@ -129,43 +240,66 @@ public final class Reflections {
         }
     }
 
-    public static <T> T instantiate(Class<T> clazz) throws IllegalAccessException, InstantiationException {
-        return clazz.newInstance();
-    }
 
-    public static Class<?> classForName(String name) {
-        return classForName(name, getContextClassLoader());
-    }
+    public static URLClassLoader createURLClassLoader(String dirPath) throws IOException {
 
-    public static Class<?> classForName(String name, ClassLoader cl) {
-        if (cl != null) {
-            try {
-                return Class.forName(name, false, cl);
-            } catch (ClassNotFoundException ex) {
-                LOGGER.debug("Can't find class {} in {}", name, cl);
+        String path;
+        File file;
+        URL appRoot;
+        URL classesURL;
+
+        if (!dirPath.endsWith(File.separator) && !dirPath.endsWith(".war") && !dirPath.endsWith(".jar")) {
+            dirPath += File.separator;
+        }
+
+        // Must be a better way because that sucks!
+        String separator = (System.getProperty("os.name").toLowerCase().startsWith("win") ? "/" : "//");
+
+        if (dirPath != null && (dirPath.endsWith(".war") || dirPath.endsWith(".jar"))) {
+            file = new File(dirPath);
+            appRoot = new URL("jar:file:" + separator + file.getCanonicalPath().replace('\\', '/') + "!/");
+            classesURL = new URL("jar:file:" + separator + file.getCanonicalPath().replace('\\', '/')
+                    + "!/WEB-INF/classes/");
+
+            path = ExpandJar.expand(appRoot);
+        } else {
+            path = dirPath;
+            classesURL = new URL("file://" + path + "WEB-INF/classes/");
+            appRoot = new URL("file://" + path);
+        }
+
+        String absolutePath = new File(path).getAbsolutePath();
+        URL[] urls;
+        File libFiles = new File(absolutePath + File.separator + "WEB-INF" + File.separator + "lib");
+        int arraySize = 4;
+
+        if (libFiles.exists() && libFiles.isDirectory()) {
+            urls = new URL[libFiles.listFiles().length + arraySize];
+            for (int i = 0; i < libFiles.listFiles().length; i++) {
+                urls[i] = new URL("jar:file:" + separator + libFiles.listFiles()[i].toString().replace('\\', '/')
+                        + "!/");
             }
+        } else {
+            urls = new URL[arraySize];
         }
-        try {
-            return Class.forName(name);
-        } catch (ClassNotFoundException ex) {
-            LOGGER.debug("Can't find class {}", name);
-        }
-        return null;
+
+        urls[urls.length - 1] = classesURL;
+        urls[urls.length - 2] = appRoot;
+        urls[urls.length - 3] = new URL("file://" + path + "/WEB-INF/classes/");
+        urls[urls.length - 4] = new URL("file://" + path);
+
+        return new URLClassLoader(urls, Thread.currentThread().getContextClassLoader());
     }
 
-    public static Class<?> classForNameWithException(String name) throws ClassNotFoundException {
-        return classForNameWithException(name, getContextClassLoader());
-    }
-
-    public static Class<?> classForNameWithException(String name, ClassLoader cl) throws ClassNotFoundException {
-        if (cl != null) {
-            try {
-                return Class.forName(name, false, cl);
-            } catch (ClassNotFoundException ex) {
-                LOGGER.debug("Can't find class {} in {}", name, cl);
+    private static void makeAccessible(final AccessibleObject o) {
+        AccessController.doPrivileged(new PrivilegedAction<Object>() {
+            public Object run() {
+                if (!o.isAccessible()) {
+                    o.setAccessible(true);
+                }
+                return o;
             }
-        }
-        return Class.forName(name);
+        });
     }
 
 
