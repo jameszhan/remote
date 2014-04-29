@@ -108,6 +108,11 @@ public class ScannerTests implements Cloneable {
         Assert.assertNotNull(paths);
         Assert.assertFalse(paths.isEmpty());
         Assert.assertEquals(2, paths.size());
+
+        paths = Scanners.matchedBy("log4j.properties", "regex:.+");
+        Assert.assertNotNull(paths);
+        Assert.assertFalse(paths.isEmpty());
+        Assert.assertTrue(paths.size() > 0);
     }
 
 
