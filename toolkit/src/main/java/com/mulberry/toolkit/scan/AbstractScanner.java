@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
  */
 public abstract class AbstractScanner implements Scanner {
     protected final static Logger LOGGER = LoggerFactory.getLogger(Scanner.class);
+    protected final static String ALL_CLASS_PATTERN = "glob:**/*.class";
 
     protected final URLClassLoader classLoader;
     protected final Set<String> packages;
@@ -67,28 +68,6 @@ public abstract class AbstractScanner implements Scanner {
             } catch (ClassNotFoundException e) {
                 throw new IllegalArgumentException("Unknown class: " + className, e);
             }
-        }
-    }
-
-    protected static class PathPatternPredicate implements Predicate<Path> {
-        private final Pattern pattern;
-
-        protected PathPatternPredicate(String patternString) {
-            StringBuilder sb = new StringBuilder();
-            if (patternString != null && !patternString.startsWith("^")) {
-                sb.append("^.*");
-            }
-            if (patternString != null) {
-                sb.append(patternString);
-            }
-            if(patternString != null && !patternString.endsWith("$")) {
-                sb.append("\\.class$");
-            }
-            this.pattern = Pattern.compile(sb.toString(), Pattern.CASE_INSENSITIVE);
-        }
-
-        @Override public boolean apply(Path file) {
-            return file != null && pattern.matcher(file.toString()).find();
         }
     }
 }

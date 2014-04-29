@@ -27,19 +27,19 @@ public class AnnotationScanner extends AbstractScanner {
 
     @SafeVarargs
     public AnnotationScanner(Set<String> packages, Class<? extends Annotation>... annotations) {
-        this(null, packages, null, Arrays.asList(annotations));
+        this(packages, Arrays.asList(annotations));
     }
 
     public AnnotationScanner(Set<String> packages, Collection<Class<? extends Annotation>> annotations) {
-        this(null, packages, null, annotations);
+        this(null, packages, annotations);
     }
 
     public AnnotationScanner(URLClassLoader classLoader, Set<String> packages, Collection<Class<? extends Annotation>> annotations) {
-        this(classLoader, packages, null, annotations);
+        this(classLoader, packages, ALL_CLASS_PATTERN, annotations);
     }
 
     protected AnnotationScanner(URLClassLoader classLoader, Set<String> packages, String pattern, final Collection<Class<? extends Annotation>> annotations) {
-        super(classLoader, packages, new PathPatternPredicate(pattern));
+        super(classLoader, packages, new Scanners.PathMatcherPredicate(pattern));
         this.annotations = annotations;
     }
 

@@ -7,21 +7,20 @@ package com.mulberry.toolkit.scan;
 
 import com.google.common.annotations.GwtCompatible;
 import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.mulberry.toolkit.base.Consumer;
 import com.mulberry.toolkit.reflect.Reflections;
 import org.junit.Assert;
 import org.junit.Test;
-import org.objectweb.asm.ClassReader;
 
 import javax.annotation.Nullable;
 import javax.jws.WebService;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Set;
 
@@ -92,6 +91,23 @@ public class ScannerTests implements Cloneable {
         Assert.assertFalse(classes.contains(Hello.class));
         Assert.assertFalse(classes.contains(HelloWorld.class));
         Assert.assertFalse(classes.contains(WorldHello.class));
+    }
+
+    @Test
+    public void walkClassPath() throws IOException {
+
+    }
+
+    @Test
+    public void locatedBy() throws Exception {
+        Collection<Path> paths = Scanners.matchedBy("META-INF", "glob:**/pom.xml");
+        Assert.assertNotNull(paths);
+        Assert.assertFalse(paths.isEmpty());
+
+        paths = Scanners.matchedBy("com/google", "glob:**com/google/**/xml/*.class");
+        Assert.assertNotNull(paths);
+        Assert.assertFalse(paths.isEmpty());
+        Assert.assertEquals(2, paths.size());
     }
 
 

@@ -9,6 +9,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.mulberry.toolkit.base.Consumer;
 import com.mulberry.toolkit.base.Consumers;
 import com.mulberry.toolkit.io.URLs;
@@ -22,13 +23,11 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.zip.ZipError;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -55,27 +54,24 @@ public final class Scanners {
         return new InterfaceScanner(ImmutableSet.of(pkg), intefaces).scan();
     }
 
+    public static Collection<Path> matchedBy(String resourcePrefix, String syntaxAndPattern) throws IOException {
+       return matchedBy(Reflections.getContextClassLoader(), resourcePrefix, syntaxAndPattern);
+    }
 
-    public static void scan(URLClassLoader classLoader, Set<String> packages, final Predicate<Path> predicate, final Consumer<Path> consumer) throws IOException{
+    public static Collection<Path> matchedBy(ClassLoader classLoader, String resourcePrefix, String syntaxAndPattern) throws IOException {
+        final Set<Path> paths = Sets.newHashSet();
+        walkClasspath(classLoader, resourcePrefix, new PathMatcherPredicate(syntaxAndPattern), Consumers.collect(paths));
+        return paths;
+    }
+
+    public static void scan(ClassLoader classLoader, Set<String> packages, final Predicate<Path> predicate, final Consumer<Path> consumer) throws IOException {
         for (String p : packages) {
-            Enumeration<URL> e = classLoader.getResources(p.replace(".", "/"));
-            while (e.hasMoreElements()) {
-                URL url = e.nextElement();
-                Path path = URLs.toPath(url, classLoader);
-                Files.walkFileTree(path, new SimpleFileVisitor<Path>(){
-                    @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        if (predicate.apply(file)) {
-                            consumer.accept(file);
-                        }
-                        return super.visitFile(file, attrs);
-                    }
-                });
-            }
+            walkClasspath(classLoader, p.replace(".", "/"), predicate, consumer);
         }
     }
 
     public static void scan(Path path, String dirPattern, String extension, Consumer<Path> consumer) throws IOException {
-        scan(path, new PatternPredicate(dirPattern), new ExtensionPredicate(extension), consumer);
+        scan(path, new PathMatcherPredicate(dirPattern), new ExtensionPredicate(extension), consumer);
     }
 
     public static void scan(String file, Predicate<String> selector, Predicate<String> predicate, Consumer<String> consumer) throws IOException {
@@ -92,6 +88,22 @@ public final class Scanners {
 
     public static Path scan(Path path, Predicate<Path> selector, Predicate<Path> predicate, Consumer<Path> consumer) throws IOException {
         return Files.walkFileTree(path, new DefaultFileVisitor(selector, predicate, consumer));
+    }
+
+    public static void walkClasspath(ClassLoader classLoader, String resourcePrefix, final Predicate<Path> predicate, final Consumer<Path> consumer) throws IOException {
+        Enumeration<URL> e = classLoader.getResources(resourcePrefix);
+        while (e.hasMoreElements()) {
+            URL url = e.nextElement();
+            Path path = URLs.toPath(url, classLoader);
+            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+                @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    if (predicate.apply(file)) {
+                        consumer.accept(file);
+                    }
+                    return super.visitFile(file, attrs);
+                }
+            });
+        }
     }
 
     public static Path walkZipTree(@Nonnull Path zipFile, FileVisitor<Path> fileVisitor) throws IOException {
@@ -146,23 +158,15 @@ public final class Scanners {
         }
     }
 
-    private static class PatternPredicate implements Predicate<Path> {
-        private final Pattern pattern;
+    protected static class PathMatcherPredicate implements Predicate<Path> {
+        private final PathMatcher pathMatcher;
 
-        private PatternPredicate(String patternString) {
-            StringBuilder sb = new StringBuilder();
-            if (!patternString.startsWith("^")) {
-                sb.append("^.*");
-            }
-            sb.append(patternString);
-            if(!patternString.endsWith("$")) {
-                sb.append(".*$");
-            }
-            this.pattern = Pattern.compile(sb.toString(), Pattern.CASE_INSENSITIVE);
+        protected PathMatcherPredicate(String syntaxAndPattern) {
+            this.pathMatcher = FileSystems.getDefault().getPathMatcher(checkNotNull(syntaxAndPattern));
         }
 
         @Override public boolean apply(@Nullable Path input) {
-            return input != null && pattern.matcher(input.toString()).find();
+            return input != null && pathMatcher.matches(input);
         }
     }
 

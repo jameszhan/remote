@@ -28,19 +28,19 @@ public class InterfaceScanner extends AbstractScanner {
     private final Collection<Class<?>> interfaces;
 
     public InterfaceScanner(Set<String> packages, Class<?>... interfaces) {
-        this(null, packages, null, Arrays.asList(interfaces));
+        this(packages, Arrays.asList(interfaces));
     }
 
     public InterfaceScanner(Set<String> packages, Collection<Class<?>> interfaces) {
-        this(null, packages, null, interfaces);
+        this(null, packages, interfaces);
     }
 
     public InterfaceScanner(URLClassLoader classLoader, Set<String> packages, Collection<Class<?>> interfaces) {
-        this(classLoader, packages, null, interfaces);
+        this(classLoader, packages, ALL_CLASS_PATTERN, interfaces);
     }
 
     protected InterfaceScanner(URLClassLoader classLoader, Set<String> packages, String pattern, final Collection<Class<?>> interfaces) {
-        super(classLoader, packages, new PathPatternPredicate(pattern));
+        super(classLoader, packages, new Scanners.PathMatcherPredicate(pattern));
         this.interfaces = interfaces;
     }
 

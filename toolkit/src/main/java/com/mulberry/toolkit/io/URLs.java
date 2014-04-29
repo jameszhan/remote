@@ -54,6 +54,8 @@ public final class URLs {
     /** Separator between JAR URL and file path within the JAR */
     public static final String JAR_URL_SEPARATOR = "!/";
 
+    public static final String META_INF = "META-INF";
+
     public static boolean isJarURL(URL url) {
         String up = url.getProtocol();
         return (URL_PROTOCOL_JAR.equals(up) || URL_PROTOCOL_ZIP.equals(up) || URL_PROTOCOL_WSJAR.equals(up));
