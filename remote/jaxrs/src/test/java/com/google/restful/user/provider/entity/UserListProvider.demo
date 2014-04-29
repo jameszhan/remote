@@ -1,0 +1,37 @@
+package com.google.restful.user.provider.entity;
+
+import java.util.List;
+
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Provider;
+
+import com.google.restful.provider.entity.ListProvider;
+import com.google.restful.user.bean.User;
+
+@Produces({"text/html", "text/plain"})
+@Provider
+public class UserListProvider extends ListProvider<User> {
+
+	@Override
+	protected String getListString(List<User> t, MediaType mime) {
+		StringBuilder sb = new StringBuilder();
+		if (mime.equals(MediaType.TEXT_HTML_TYPE)) {
+			sb.append("<table>\n");
+			for (User u : t) {
+				sb.append("<tr>\n");
+				sb.append("<td>").append(u.getUserId()).append("</td><td>").append(u.getName()).append("</td>");
+				sb.append("</tr>\n");
+			}
+			sb.append("</table>");
+
+		} else {
+			for(User u : t)
+			{
+				sb.append(u.getUserId()).append(' ').append(u.getName()).append('\n');		
+			}			
+		}
+		return sb.toString();
+	}
+
+}

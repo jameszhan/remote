@@ -1,0 +1,228 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>Restful Testing Client</title>
+<script type="text/javascript">
+
+function $(id){
+	if(typeof id === 'string'){
+		return document.getElementById(id);
+	}
+	return id;
+}
+
+function formatXml(xmlString, obj, stylesheet){	
+	var xml = new ActiveXObject('MSXML2.DOMDocument');
+	var xsl = new ActiveXObject('MSXML2.DOMDocument');
+	xml.async = false;
+	xml.loadXML(xmlString);
+	xsl.async = false;
+	xsl.load(stylesheet);	
+	var transformedXML = xml.transformNode(xsl).substring(2);	
+	obj.value += transformedXML;
+}
+
+function format(xmlString, obj){
+	formatXml(xmlString, obj, 'pretty.xsl');
+}
+
+
+function createXHRObject(){   
+    var _msxml_progid = ['Microsoft.XMLHTTP', 'MSXML2.XMLHTTP.3.0', 'MSXML2.XMLHTTP'], http;   
+    try{   
+        http = new XMLHttpRequest();   
+    }catch(e){   
+        for(var i=0; i<this._msxml_progid.length; ++i){   
+            try {                      
+                http = new ActiveXObject(this._msxml_progid[i]);   
+                break;   
+            } catch(ignore){}   
+        }   
+           
+    }   
+    return http;           
+}  
+
+var http = createXHRObject();
+
+
+function sendRequest(h){
+	if(h && h.url){
+		if(!h.method){
+			h.method = 'GET';
+		}	
+		var url = h.url + '?date=' + new Date(); 
+		http.open(h.method, url, true);
+		
+		if(h.headers){
+			for(var i = 0; i < h.headers.length; i++){				
+				http.setRequestHeader(h.headers[i].name, h.headers[i].value);
+			}
+		}
+		http.onreadystatechange = function(){
+			switch(http.readyState){
+				case 0:
+					if(h.initialize){
+						h.initialize(http);
+					}
+					break;
+				case 1: 
+					if(h.loading){
+						h.loading(http);
+					}
+					break;
+				case 2:
+					if(h.loaded){
+						h.loaded(http);
+					}
+					break;
+				case 3:
+					if(h.interactive){
+						h.interactive(http);
+					}
+					break;
+				case 4:
+					if(http.status == 200){
+						if(h.success){
+							h.success(http);
+						}
+					}else{
+						if(h.failure){
+							h.failure(http);
+						}
+					}
+					break;
+			}
+		}	
+		http.send(h.data);
+	}
+}
+
+
+
+function doRequest(){
+	var urlString = $('url').value;
+	var methodString = $('methodType').value;
+	var mediaString = $('mediaType').value;
+	var contentType = $('contentType').value;
+	var requestString = $('requestBody').value;
+	
+	var msgEl = $('msgBox');
+	msgEl.value = 'url: ' + urlString + '\n'
+				+  'method: ' + methodString + '\n'
+				+  'MIME: ' + mediaString + '\n'
+				+  'Content-Type: ' + contentType + '\n'
+				+  'requestBody: ' + requestString + '\n\n\n';
+	var h = {
+		url: urlString,
+		method: methodString,
+		data: requestString,	
+		success: function(http){	
+			try{		
+				msgEl.value += http.status + ' ' + http.statusText + '\n';
+				msgEl.value += 'Header: \n' + http.getAllResponseHeaders() + '\n\n';
+				if(mediaString.indexOf("htm") != -1){
+					var win = window.open("", "_blank");
+					win.document.writeln(http.responseText);
+				}else if(mediaString.indexOf("xml") != -1){
+					format(http.responseText, msgEl);
+				}else{				
+					msgEl.value += 'Response: \n' + http.responseText + '\n\n';	
+				}
+			}catch(e){
+				msgEl.value += "\n" + e.name + ', ' + e.message + "\n";   
+			}
+		},
+		failure: function(http){
+			msgEl.value += http.status + ' ' + http.statusText + '\n';
+			msgEl.value += 'Header: \n' + http.getAllResponseHeaders() + '\n';
+			msgEl.value += 'Response: \n' + http.responseText + '\n\n';			
+		},
+		headers: [
+			{
+				name: 'Accept',
+				value: mediaString
+			}, {
+				name: 'Content-Type',
+				value: contentType
+			}
+		]
+	}
+	sendRequest(h);
+}
+
+function doSelect(obj){
+	var options = $('contentType').options;
+	function select(j) {
+		for(var i = 0; i < options.length; i++){
+			if(i == j){
+				options[i].selected = true;
+			}
+		}
+	}
+	var index = obj.selectedIndex;
+	switch(index){		
+		case 3:
+			select(3);
+			break;
+		default:
+			select(1);
+			break;
+	}
+}
+
+
+
+</script>
+</head>
+<body>
+<table width="800" border="1" align="center">
+  <tr>
+    <td width="200">URL</td>
+    <td><input name="url" id="url" type="text" size="55" value="http://localhost:8080/restful/" /></td>
+  </tr>
+  <tr>
+    <td>Method Type</td>
+    <td>
+    <select name="methodType" id="methodType" onchange="doSelect(this)">
+        <option value="POST">CREATE</option>
+        <option value="GET" selected="selected">READ</option>
+        <option value="PUT">UPDATE</option>
+        <option value="DELETE">DELETE</option>
+      </select></td>
+  </tr>
+  <tr>
+    <td>Media Type</td>
+    <td><select name="mediaType" id="mediaType">
+        <option value="text/html">HTML</option>
+        <option value="application/xml">XML</option>
+        <option value="application/json">JSON</option>
+        <option value="text/plain">TEXT</option>
+        <option value="application/fastinfoset">FastInfoset</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Content Type</td>
+    <td><select name="contentType" id="contentType">
+        <option value="application/xml">XML</option>
+        <option value="application/json">JSON</option>
+        <option value="text/plain">TEXT</option>
+        <option value="application/x-www-form-urlencoded">FORM_URLENCODED</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td>Request Body</td>
+    <td><textarea name="requestBody" id="requestBody" cols="100" rows="5"></textarea></td>
+  </tr>
+  <tr>
+    <td colspan="2"><textarea id="msgBox" cols="120" rows="20"></textarea></td>
+  </tr>
+  <tr>
+    <td colspan="2"><button onclick="doRequest()">Send Request</button></td>
+  </tr>
+</table>
+</body>
+</html>

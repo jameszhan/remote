@@ -1,0 +1,21 @@
+<psfRequest clientId="PsfClient">
+   <dealGroup pageId="5925" positionId="1" dealCount="20">
+      <productType>epackages</productType>
+      <productType>hotels</productType>
+      <productType>flights</productType>
+   </dealGroup>
+   <dealGroup pageId="8086" positionId="3" dealCount="25">
+      <productType>hotels</productType>
+      <productType>flights</productType>
+   </dealGroup>
+   <dealGroup pageId="5926" positionId="7" dealCount="10">
+      <productType>hotels</productType>
+      <productType>flights</productType>
+   </dealGroup>
+   <sort fieldName="headline" direction="ASC" />
+   <sort fieldName="HotelIDs" direction="ASC" />
+   <sort fieldName="HotelClass" direction="ASC" />
+   <requiredFieldName>headline</requiredFieldName>
+   <requiredFieldName>HotelIDs</requiredFieldName>
+   <requiredFieldName>HotelIDs</requiredFieldName>
+</psfRequest>

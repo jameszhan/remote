@@ -1,0 +1,46 @@
+package com.google.restful.provider.entity;
+
+import java.util.List;
+
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import com.google.restful.bean.Address;
+import com.google.restful.bean.Contact;
+
+
+@Produces({"text/html", "text/plain"})
+public class ContactListProvider extends ListProvider<Contact> {
+
+	@Override
+	protected String getListString(List<Contact> t, MediaType mime) {
+		StringBuilder sb = new StringBuilder();
+		if (mime.equals(MediaType.TEXT_HTML_TYPE)) {
+			sb.append("<table>\n");
+			for (Contact c : t) {
+				sb.append("<tr>\n");
+
+				sb.append("<td>").append(c.getId()).append("</td><td>").append(c.getName()).append("</td>");
+				sb.append("<td>");
+				for (Address addr : c.getAddresses()) {
+					sb.append(addr.getCity()).append(", ").append(addr.getStreet()).append('\n');
+				}
+				sb.append("</td>");
+				sb.append("</tr>\n");
+			}
+			sb.append("</table>");
+
+		} else {
+			for(Contact c : t)
+			{
+				sb.append(c.getId()).append(' ').append(c.getName()).append(' ');
+				for (Address addr : c.getAddresses()) {
+					sb.append(addr.getCity()).append(", ").append(addr.getStreet()).append(' ');
+				}
+				sb.append('\n');
+			}			
+		}
+		return sb.toString();
+	}
+
+}

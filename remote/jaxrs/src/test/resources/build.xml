@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="party" basedir="." default="build">
+
+	<property file="build.properties" />
+
+	<property name="src.dir" value="src" />
+	<property name="web.dir" value="war" />
+	<property name="build.dir" value="${web.dir}/WEB-INF/classes" />
+	<property name="build.lib" value="${web.dir}/WEB-INF/lib" />
+	<property name="name" value="ROOT" />
+
+	<path id="master-classpath">
+		<fileset dir="${web.dir}/WEB-INF/lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="${appserver.lib}">
+			<include name="servlet*.jar" />
+		</fileset>
+		<pathelement path="${build.dir}" />
+	</path>
+
+
+	<target name="build" description="Compile main source tree java files">
+		<mkdir dir="${build.dir}" />
+		<javac destdir="${build.dir}" source="1.6" target="1.6" debug="true" 
+			deprecation="false" optimize="false" failonerror="true">
+			<src path="${src.dir}" />
+			<exclude name="**/*Test*.java"/>
+			<classpath refid="master-classpath" />
+		</javac>
+		<copy todir="${build.dir}" preservelastmodified="true">
+			<fileset dir="${src.dir}">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="deploy" depends="build" description="Deploy application">
+		<copy todir="${deploy.path}/${name}" preservelastmodified="true" verbose="true">
+			<fileset dir="${web.dir}">
+				<include name="**/*.*" />
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="deploywar" depends="build" description="Deploy application as a WAR file">
+		<war destfile="${name}.war" webxml="${web.dir}/WEB-INF/web.xml">
+			<fileset dir="${web.dir}">
+				<include name="**/*.*" />
+			</fileset>
+		</war>
+		<copy todir="${deploy.path}" preservelastmodified="true">
+			<fileset dir=".">
+				<include name="*.war" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- ============================================================== -->
+	<!-- Tomcat tasks - remove these if you don't have Tomcat installed -->
+	<!-- ============================================================== -->
+
+	<path id="catalina-ant-classpath">
+		<!-- We need the Catalina jars for Tomcat -->
+		<!--  * for other app servers - check the docs -->
+		<fileset dir="${appserver.lib}">
+			<include name="catalina-ant.jar" />
+		</fileset>
+	</path>
+
+	<!--
+	<taskdef name="install" classname="org.apache.catalina.ant.InstallTask">
+		<classpath refid="catalina-ant-classpath" />
+	</taskdef>
+	<taskdef name="reload" classname="org.apache.catalina.ant.ReloadTask">
+		<classpath refid="catalina-ant-classpath" />
+	</taskdef>
+	<taskdef name="list" classname="org.apache.catalina.ant.ListTask">
+		<classpath refid="catalina-ant-classpath" />
+	</taskdef>
+	<taskdef name="start" classname="org.apache.catalina.ant.StartTask">
+		<classpath refid="catalina-ant-classpath" />
+	</taskdef>
+	<taskdef name="stop" classname="org.apache.catalina.ant.StopTask">
+		<classpath refid="catalina-ant-classpath" />
+	</taskdef>
+-->
+	<target name="tomcat-start" description="Launches Tomcat">
+		<fail unless="appserver.home" message="You must set the TOMCAT_HOME environment variable to point to your Tomcat installation folder"/>
+		<exec dir="${appserver.home}/bin" executable="catalina.bat" vmlauncher="false" spawn="true">
+			<arg value="start"/>
+		</exec>
+	</target>
+
+	<!-- Launches Tomcat in debug mode -->
+	<target name="tomcat-start-debug" description="Launches Tomcat in JDPA debug mode on port 8000">
+		<fail unless="appserver.home" message="You must set the TOMCAT_HOME environment variable to point to your Tomcat installation folder"/>
+		<exec dir="${appserver.home}/bin" executable="catalina.bat" vmlauncher="false" spawn="true">
+			<arg value="jpda"/>
+			<arg value="start"/>
+			<env key="JPDA_ADDRESS" value="8000"/>
+			<env key="JPDA_TRANSPORT" value="dt_socket"/>
+			<env key="JPDA_SUSPEND" value="n"/>			
+		</exec>
+	</target>
+
+	<target name="clean" description="Clean output directories">
+		<delete failonerror="false">
+			<fileset dir="${build.dir}">
+				<include name="**/*.class" />
+			</fileset>
+		</delete>
+	</target>
+
+	<target name="undeploy" description="Un-Deploy application">
+		<delete includeEmptyDirs="true" verbose="true" quiet="false" failonerror="false">
+			<fileset dir="${deploy.path}/${name}">
+				<include name="**/*.*" />
+			</fileset>
+		</delete>
+	</target>
+	<!-- End Tomcat tasks -->
+
+</project>

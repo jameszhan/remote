@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN" "http://java.sun.com/j2ee/dtds/web-jsptaglibrary_1_1.dtd">
+<taglib>
+	<uri>http://www.apple.com/tags</uri>
+	<tlibversion>1.0</tlibversion>
+	<jspversion>1.1</jspversion>
+	<shortname>test</shortname>
+	<info>A catalog of basic tags.</info>
+	<tag>
+		<name>hello</name>
+		<tagclass>com.apple.www.jsptag.HelloTag</tagclass>
+		<bodycontent>empty</bodycontent>
+		<info>
+			Hello World test.
+        </info>
+		<attribute>
+			<name>message</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>msg</name>
+		<tagclass>com.apple.www.jsptag.samples.MessageTag</tagclass>
+		<bodycontent>scriptless</bodycontent>
+		<info>
+			Generic test.
+        </info>
+	</tag>
+
+	<tag>
+		<name>loop</name>
+		<tagclass>com.apple.www.jsptag.samples.LoopTag</tagclass>
+		<teiclass>com.apple.www.jsptag.samples.LoopValidator</teiclass>
+		<bodycontent>JSP</bodycontent>
+		<info>
+			Loop Tag.
+        </info>
+		<attribute>
+			<name>times</name>
+			<required>false</required>
+		</attribute>		
+	</tag>
+	
+	<tag>
+		<name>lo</name>
+		<tagclass>com.apple.www.jsptag.samples.LoopTag</tagclass>
+		<teiclass>com.apple.www.jsptag.samples.LoopValidator</teiclass>
+		<bodycontent>tagdependent</bodycontent>
+		<info>
+			Loop Tag.
+        </info>
+		<attribute>
+			<name>times</name>
+			<required>false</required>
+		</attribute>		
+	</tag>
+	
+	<tag>
+		<name>life</name>
+		<tagclass>com.apple.www.jsptag.samples.LifecycleTag</tagclass>		
+		<bodycontent>JSP</bodycontent>
+		<info>
+			Lifecycle Tag.
+        </info>
+        <attribute>
+			<name>startFlag</name>
+			<required>false</required>
+		</attribute>	
+		<attribute>
+			<name>afterBodyFlag</name>
+			<required>false</required>
+		</attribute>	
+		<attribute>
+			<name>endFlag</name>
+			<required>false</required>
+		</attribute>		
+	</tag>
+</taglib>
