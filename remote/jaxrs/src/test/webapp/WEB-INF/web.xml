@@ -12,7 +12,7 @@
 
     <servlet>
         <servlet-name>debug</servlet-name>
-        <servlet-class>com.apple.www.debug.DebugServlet</servlet-class>
+        <servlet-class>com.mulberry.athena.remote.debug.DebugServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
 

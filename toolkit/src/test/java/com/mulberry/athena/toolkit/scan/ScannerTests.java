@@ -112,18 +112,6 @@ public class ScannerTests implements Cloneable {
     }
 
 
-    public static String toString(InputStream in) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        byte[] buf = new byte[1024];
-        int len = in.read(buf);
-        while (len >= 0) {
-            sb.append(new String(buf, 0, len));
-            len = in.read(buf);
-        }
-        return sb.toString();
-    }
-
-
     @GwtCompatible public class Hello implements Serializable, Cloneable {}
 
     @WebService @GwtCompatible public static class World implements Cloneable {}

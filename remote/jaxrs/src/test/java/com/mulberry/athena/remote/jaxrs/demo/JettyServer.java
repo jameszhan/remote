@@ -1,4 +1,4 @@
-package com.apple.embed.server;
+package com.mulberry.athena.remote.jaxrs.demo;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
@@ -13,7 +13,7 @@ public class JettyServer {
 		connector.setPort(8088);
 		server.addConnector(connector);
 
-		WebAppContext webapp = new WebAppContext("Reference/webs/src/main/webapp", "/");
+		WebAppContext webapp = new WebAppContext("remote/webs/src/site", "/");
 
 		server.setHandler(webapp);
 		server.start();
