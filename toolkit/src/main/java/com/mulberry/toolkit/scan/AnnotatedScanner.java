@@ -21,24 +21,24 @@ import java.util.*;
  *         Date: 4/27/14
  *         Time: 2:47 AM
  */
-public class AnnotationScanner extends AbstractScanner {
+public class AnnotatedScanner extends AbstractScanner {
 
     private final Collection<Class<? extends Annotation>> annotations;
 
     @SafeVarargs
-    public AnnotationScanner(Set<String> packages, Class<? extends Annotation>... annotations) {
+    public AnnotatedScanner(Set<String> packages, Class<? extends Annotation>... annotations) {
         this(packages, Arrays.asList(annotations));
     }
 
-    public AnnotationScanner(Set<String> packages, Collection<Class<? extends Annotation>> annotations) {
+    public AnnotatedScanner(Set<String> packages, Collection<Class<? extends Annotation>> annotations) {
         this(null, packages, annotations);
     }
 
-    public AnnotationScanner(URLClassLoader classLoader, Set<String> packages, Collection<Class<? extends Annotation>> annotations) {
+    public AnnotatedScanner(URLClassLoader classLoader, Set<String> packages, Collection<Class<? extends Annotation>> annotations) {
         this(classLoader, packages, ALL_CLASS_PATTERN, annotations);
     }
 
-    protected AnnotationScanner(URLClassLoader classLoader, Set<String> packages, String pattern, final Collection<Class<? extends Annotation>> annotations) {
+    protected AnnotatedScanner(URLClassLoader classLoader, Set<String> packages, String pattern, final Collection<Class<? extends Annotation>> annotations) {
         super(classLoader, packages, new Scanners.PathMatcherPredicate(pattern));
         this.annotations = annotations;
     }

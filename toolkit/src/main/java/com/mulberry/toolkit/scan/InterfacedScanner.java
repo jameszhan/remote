@@ -23,23 +23,23 @@ import java.util.Set;
  *         Date: 4/28/14
  *         Time: 10:42 PM
  */
-public class InterfaceScanner extends AbstractScanner {
+public class InterfacedScanner extends AbstractScanner {
 
     private final Collection<Class<?>> interfaces;
 
-    public InterfaceScanner(Set<String> packages, Class<?>... interfaces) {
+    public InterfacedScanner(Set<String> packages, Class<?>... interfaces) {
         this(packages, Arrays.asList(interfaces));
     }
 
-    public InterfaceScanner(Set<String> packages, Collection<Class<?>> interfaces) {
+    public InterfacedScanner(Set<String> packages, Collection<Class<?>> interfaces) {
         this(null, packages, interfaces);
     }
 
-    public InterfaceScanner(URLClassLoader classLoader, Set<String> packages, Collection<Class<?>> interfaces) {
+    public InterfacedScanner(URLClassLoader classLoader, Set<String> packages, Collection<Class<?>> interfaces) {
         this(classLoader, packages, ALL_CLASS_PATTERN, interfaces);
     }
 
-    protected InterfaceScanner(URLClassLoader classLoader, Set<String> packages, String pattern, final Collection<Class<?>> interfaces) {
+    protected InterfacedScanner(URLClassLoader classLoader, Set<String> packages, String pattern, final Collection<Class<?>> interfaces) {
         super(classLoader, packages, new Scanners.PathMatcherPredicate(pattern));
         this.interfaces = interfaces;
     }

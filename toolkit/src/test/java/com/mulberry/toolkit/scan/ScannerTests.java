@@ -6,16 +6,12 @@
 package com.mulberry.toolkit.scan;
 
 import com.google.common.annotations.GwtCompatible;
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mulberry.toolkit.base.Consumer;
-import com.mulberry.toolkit.reflect.Reflections;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.annotation.Nullable;
 import javax.jws.WebService;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,7 +32,7 @@ public class ScannerTests implements Cloneable {
 
     @Test
     public void scanGwtCompatible() throws Exception {
-        Scanner scanner = new AnnotationScanner(ImmutableSet.of("com.google.common.collect"), GwtCompatible.class);
+        Scanner scanner = new AnnotatedScanner(ImmutableSet.of("com.google.common.collect"), GwtCompatible.class);
         Collection<Class<?>> classes = scanner.scan();
         Assert.assertNotNull(classes);
         Set<Class<?>> subSet = ImmutableSet.of(Lists.class, Maps.class);
@@ -45,7 +41,7 @@ public class ScannerTests implements Cloneable {
 
     @Test
     public void scanAnnotations() throws Exception {
-        Scanner scanner = new AnnotationScanner(ImmutableSet.of("com.mulberry.toolkit.scan"), GwtCompatible.class, WebService.class);
+        Scanner scanner = new AnnotatedScanner(ImmutableSet.of("com.mulberry.toolkit.scan"), GwtCompatible.class, WebService.class);
         Collection<Class<?>> classes = scanner.scan();
         Assert.assertNotNull(classes);
         Assert.assertFalse(classes.isEmpty());
@@ -58,7 +54,7 @@ public class ScannerTests implements Cloneable {
 
     @Test
     public void scanInterfaces() throws Exception {
-        Scanner scanner = new InterfaceScanner(ImmutableSet.of("com.mulberry.toolkit.scan"), Serializable.class, Cloneable.class);
+        Scanner scanner = new InterfacedScanner(ImmutableSet.of("com.mulberry.toolkit.scan"), Serializable.class, Cloneable.class);
         Collection<Class<?>> classes = scanner.scan();
         Assert.assertNotNull(classes);
         Assert.assertFalse(classes.isEmpty());

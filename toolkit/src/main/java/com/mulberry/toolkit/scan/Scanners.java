@@ -5,7 +5,6 @@
  */
 package com.mulberry.toolkit.scan;
 
-import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableSet;
@@ -19,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
@@ -40,18 +38,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *         Time: 11:25 PM
  */
 public final class Scanners {
+
     private Scanners(){}
 
+    private static final String ALL_FILES_PATTERN = "glob:**";
     private static final Logger LOGGER = LoggerFactory.getLogger(Scanners.class);
     private static final Set<String> ZIP_FILE_FORMATS = ImmutableSet.of("jar", "zip", "war", "par", "ear");
     private static final Predicate<Path> IS_ZIP_FILE = new ExtensionPredicate(ZIP_FILE_FORMATS);
 
     public static Collection<Class<?>> annotatedBy(String pkg, Class<? extends Annotation>... annotations) throws IOException{
-        return new AnnotationScanner(ImmutableSet.of(pkg), annotations).scan();
+        return new AnnotatedScanner(ImmutableSet.of(pkg), annotations).scan();
     }
 
     public static Collection<Class<?>> interfacedBy(String pkg, Class<?>... intefaces) throws IOException{
-        return new InterfaceScanner(ImmutableSet.of(pkg), intefaces).scan();
+        return new InterfacedScanner(ImmutableSet.of(pkg), intefaces).scan();
     }
 
     public static Collection<Path> matchedBy(String resourcePrefix, String syntaxAndPattern) throws IOException {
@@ -70,20 +70,12 @@ public final class Scanners {
         }
     }
 
+    public static void scan(Path path, String filePattern, Consumer<Path> consumer) throws IOException {
+        scan(path, new PathMatcherPredicate(ALL_FILES_PATTERN), new PathMatcherPredicate(filePattern), consumer);
+    }
+
     public static void scan(Path path, String dirPattern, String extension, Consumer<Path> consumer) throws IOException {
         scan(path, new PathMatcherPredicate(dirPattern), new ExtensionPredicate(extension), consumer);
-    }
-
-    public static void scan(String file, Predicate<String> selector, Predicate<String> predicate, Consumer<String> consumer) throws IOException {
-        scan(Paths.get(file), Predicates.compose(selector, PathToString.INSTANCE),
-                Predicates.compose(predicate, PathToString.INSTANCE),
-                Consumers.compose(consumer, PathToString.INSTANCE));
-    }
-
-    public static void scan(File file, Predicate<File> selector, Predicate<File> predicate, Consumer<File> consumer) throws IOException {
-        scan(Paths.get(file.toURI()), Predicates.compose(selector, PathToFile.INSTANCE),
-                Predicates.compose(predicate, PathToFile.INSTANCE),
-                Consumers.compose(consumer, PathToFile.INSTANCE));
     }
 
     public static Path scan(Path path, Predicate<Path> selector, Predicate<Path> predicate, Consumer<Path> consumer) throws IOException {
@@ -106,7 +98,7 @@ public final class Scanners {
         }
     }
 
-    public static Path walkZipTree(@Nonnull Path zipFile, FileVisitor<Path> fileVisitor) throws IOException {
+    public static Path walkZipfile(@Nonnull Path zipFile, FileVisitor<Path> fileVisitor) throws IOException {
         FileSystem fileSystem = FileSystems.newFileSystem(zipFile, Reflections.getContextClassLoader());
         try {
             Files.walkFileTree(fileSystem.getPath("/"), fileVisitor);
@@ -118,31 +110,7 @@ public final class Scanners {
         return zipFile;
     }
 
-    private static enum PathToFile implements Function<Path, File>{
-        INSTANCE;
-
-        @Override public File apply(@Nonnull Path input) {
-            return input.toFile();
-        }
-
-        @Override public String toString() {
-            return "PathToFile";
-        }
-    }
-
-    private static enum PathToString implements Function<Path, String>{
-        INSTANCE;
-
-        @Override public String apply(Path input) {
-            return input.toString();
-        }
-
-        @Override public String toString() {
-            return "PathToString";
-        }
-    }
-
-    private static class ExtensionPredicate implements Predicate<Path> {
+    protected static class ExtensionPredicate implements Predicate<Path> {
         private final Set<String> extensions;
 
         private ExtensionPredicate(String extension) {
@@ -201,7 +169,7 @@ public final class Scanners {
 
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
             if (IS_ZIP_FILE.apply(file)) {
-                walkZipTree(file, this);
+                walkZipfile(file, this);
             } else {
                 if (file != null && selector.apply(file.getParent()) && predicate.apply(file)) {
                     consumer.accept(file);
