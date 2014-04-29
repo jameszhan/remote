@@ -55,6 +55,7 @@ public final class Scanners {
         return new InterfaceScanner(ImmutableSet.of(pkg), intefaces).scan();
     }
 
+
     public static void scan(URLClassLoader classLoader, Set<String> packages, final Predicate<Path> predicate, final Consumer<Path> consumer) throws IOException{
         for (String p : packages) {
             Enumeration<URL> e = classLoader.getResources(p.replace(".", "/"));

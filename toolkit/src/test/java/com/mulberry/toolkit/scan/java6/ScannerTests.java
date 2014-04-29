@@ -3,25 +3,18 @@
  * Alibaba.com ("Confidential Information"). You shall not disclose such Confidential Information and shall use it only
  * in accordance with the terms of the license agreement you entered into with Alibaba.com.
  */
-package com.mulberry.toolkit.scan;
+package com.mulberry.toolkit.scan.java6;
 
 import com.google.common.annotations.GwtCompatible;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.*;
-import com.mulberry.toolkit.base.Consumer;
-import com.mulberry.toolkit.reflect.Reflections;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.mulberry.toolkit.scan.Scanner;
 import org.junit.Assert;
 import org.junit.Test;
-import org.objectweb.asm.ClassReader;
 
-import javax.annotation.Nullable;
 import javax.jws.WebService;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
-import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.Set;
 
@@ -29,8 +22,8 @@ import java.util.Set;
  * Created with IntelliJ IDEA.
  *
  * @author zizhi.zhzzh
- *         Date: 4/24/14
- *         Time: 9:43 AM
+ *         Date: 4/29/14
+ *         Time: 10:12 AM
  */
 @WebService
 public class ScannerTests implements Cloneable {
@@ -93,19 +86,6 @@ public class ScannerTests implements Cloneable {
         Assert.assertFalse(classes.contains(HelloWorld.class));
         Assert.assertFalse(classes.contains(WorldHello.class));
     }
-
-
-    public static String toString(InputStream in) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        byte[] buf = new byte[1024];
-        int len = in.read(buf);
-        while (len >= 0) {
-            sb.append(new String(buf, 0, len));
-            len = in.read(buf);
-        }
-        return sb.toString();
-    }
-
 
     @GwtCompatible public class Hello implements Serializable, Cloneable {}
 

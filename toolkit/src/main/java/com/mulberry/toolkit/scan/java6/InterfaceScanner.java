@@ -1,13 +1,15 @@
-package com.mulberry.toolkit.scan;
+package com.mulberry.toolkit.scan.java6;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.mulberry.toolkit.base.Consumer;
 import com.mulberry.toolkit.base.Consumers;
+import com.mulberry.toolkit.scan.DefaultClassVisitor;
 import org.objectweb.asm.ClassReader;
 
 import javax.annotation.Nullable;
+import java.io.InputStream;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,20 +41,20 @@ public class InterfaceScanner extends AbstractScanner {
         this(classLoader, packages, null, interfaces);
     }
 
-    protected InterfaceScanner(URLClassLoader classLoader, Set<String> packages, String pattern, final Collection<Class<?>> interfaces) {
+    public InterfaceScanner(URLClassLoader classLoader, Set<String> packages, String pattern, final Collection<Class<?>> interfaces) {
         super(classLoader, packages, new PathPatternPredicate(pattern));
         this.interfaces = interfaces;
     }
 
-    @Override protected Consumer<Path> buildConsumer() {
-        return new Consumer<Path>() {
-            @Override public void accept(Path path) {
+    @Override protected Consumer<InputStream> buildConsumer() {
+        return new Consumer<InputStream>() {
+            @Override public void accept(InputStream in) {
                 try {
-                    new ClassReader(Files.newInputStream(path)).accept(new DefaultClassVisitor(
+                    new ClassReader(in).accept(new DefaultClassVisitor(
                             new InterfaceClassInfoPredicate(interfaces),
                             Consumers.collect(acceptedClassNames)), 0);
                 } catch (Exception e) {
-                    LOGGER.error("Can't handle class: " + path, e);
+                    LOGGER.error("Can't handle class stream", e);
                 }
             }
         };

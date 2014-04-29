@@ -1,18 +1,22 @@
-package com.mulberry.toolkit.scan;
+package com.mulberry.toolkit.scan.java6;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.mulberry.toolkit.base.Consumer;
 import com.mulberry.toolkit.base.Consumers;
+import com.mulberry.toolkit.scan.DefaultClassVisitor;
 import org.objectweb.asm.ClassReader;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.URLClassLoader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -44,15 +48,15 @@ public class AnnotationScanner extends AbstractScanner {
     }
 
     @Override
-    protected Consumer<Path> buildConsumer() {
-        return new Consumer<Path>() {
-            @Override public void accept(Path path) {
+    protected Consumer<InputStream> buildConsumer() {
+        return new Consumer<InputStream>() {
+            @Override public void accept(InputStream in) {
                 try {
-                    new ClassReader(Files.newInputStream(path)).accept(new DefaultClassVisitor(
+                    new ClassReader(in).accept(new DefaultClassVisitor(
                             new AnnotatedClassInfoPredicate(annotations),
                             Consumers.collect(acceptedClassNames)), 0);
-                } catch (Exception e) {
-                    LOGGER.error("Can't handle class: " + path, e);
+                } catch (IOException e) {
+                    LOGGER.warn("Can't read the class stream", e);
                 }
             }
         };

@@ -3,7 +3,7 @@
  * Alibaba.com ("Confidential Information"). You shall not disclose such Confidential Information and shall use it only
  * in accordance with the terms of the license agreement you entered into with Alibaba.com.
  */
-package com.mulberry.toolkit.scan;
+package com.mulberry.toolkit.scan.java6;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -11,10 +11,12 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Sets;
 import com.mulberry.toolkit.base.Consumer;
 import com.mulberry.toolkit.reflect.Reflections;
+import com.mulberry.toolkit.scan.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -33,12 +35,12 @@ public abstract class AbstractScanner implements Scanner {
 
     protected final URLClassLoader classLoader;
     protected final Set<String> packages;
-    protected final Predicate<Path> predicate;
-    protected final Consumer<Path> consumer;
+    protected final Predicate<String> predicate;
+    protected final Consumer<InputStream> consumer;
 
     protected final Set<String> acceptedClassNames = Sets.newConcurrentHashSet();
 
-    protected AbstractScanner(URLClassLoader classLoader, Set<String> packages, Predicate<Path> predicate) {
+    protected AbstractScanner(URLClassLoader classLoader, Set<String> packages, Predicate<String> predicate) {
         if (classLoader != null) {
             this.classLoader = classLoader;
         } else {
@@ -49,7 +51,7 @@ public abstract class AbstractScanner implements Scanner {
         this.consumer = buildConsumer();
     }
 
-    protected abstract Consumer<Path> buildConsumer();
+    protected abstract Consumer<InputStream> buildConsumer();
 
     @Override public Collection<Class<?>> scan() throws IOException {
         Scanners.scan(classLoader, packages, predicate, consumer);
@@ -70,7 +72,8 @@ public abstract class AbstractScanner implements Scanner {
         }
     }
 
-    protected static class PathPatternPredicate implements Predicate<Path> {
+
+    protected static class PathPatternPredicate implements Predicate<String> {
         private final Pattern pattern;
 
         protected PathPatternPredicate(String patternString) {
@@ -87,8 +90,9 @@ public abstract class AbstractScanner implements Scanner {
             this.pattern = Pattern.compile(sb.toString(), Pattern.CASE_INSENSITIVE);
         }
 
-        @Override public boolean apply(Path file) {
-            return file != null && pattern.matcher(file.toString()).find();
+        @Override public boolean apply(String fileName) {
+            return fileName != null && pattern.matcher(fileName).find();
         }
     }
+
 }
