@@ -15,12 +15,12 @@
     <dependencies>
         <dependency>
             <groupId>com.mulberry</groupId>
-            <artifactId>mulberry-toolkit</artifactId>
+            <artifactId>athena-toolkit</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.mulberry</groupId>
-            <artifactId>mulberry-test-common</artifactId>
+            <artifactId>athena-test-common</artifactId>
             <version>${project.parent.version}</version>
             <scope>test</scope>
         </dependency>
