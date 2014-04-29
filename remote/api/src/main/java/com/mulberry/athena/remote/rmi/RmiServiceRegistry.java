@@ -5,8 +5,10 @@
  */
 package com.mulberry.athena.remote.rmi;
 
+import com.google.common.base.Joiner;
 import com.mulberry.athena.remote.RemoteProxyFactory;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
@@ -24,7 +26,7 @@ import java.util.Set;
 public class RmiServiceRegistry {
     private RmiServiceRegistry() {}
 
-    private final static Logger LOGGER = Logger.getLogger(RmiServiceRegistry.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(RmiServiceRegistry.class);
     private final static String RMI_PREFIX = "rmi://";
     private static Registry     registry;
 
@@ -88,22 +90,18 @@ public class RmiServiceRegistry {
     }
 
     protected static Registry getRegistry() throws RemoteException {
-
         int registryPort;
         try {
             registryPort = Integer.parseInt(System.getProperty("RMI_REGISTRY_PORT"));
         } catch (NumberFormatException e) {
             registryPort = Registry.REGISTRY_PORT;
         }
-
-        if (LOGGER.isInfoEnabled()) {
-            LOGGER.info("Looking for RMI registry at port '" + registryPort + "'");
-        }
+        LOGGER.info("Looking for RMI registry at port '" + registryPort + "'");
         try {
             // Retrieve existing registry.
             Registry reg = LocateRegistry.getRegistry("localhost", registryPort);
             // test the registy is successful.
-            reg.list();
+            LOGGER.info(Joiner.on(", ").join(reg.list()));
             return reg;
         } catch (RemoteException ex) {
             LOGGER.debug("RMI registry access threw exception", ex);

@@ -7,7 +7,7 @@ package com.mulberry.athena.remote.jaxws;
 
 import com.google.common.collect.Sets;
 import com.mulberry.athena.toolkit.reflect.Reflections;
-import com.mulberry.athena.toolkit.scan.AnnotationScanner;
+import com.mulberry.athena.toolkit.scan.AnnotatedScanner;
 import com.mulberry.athena.toolkit.scan.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ public class JaxWsServicePublisher {
     private Map<String, Object> properties;
 
     public void start() throws Exception {
-        Scanner scanner = new AnnotationScanner(packages, WebService.class);
+        Scanner scanner = new AnnotatedScanner(packages, WebService.class);
         for (Class<?> clazz : scanner.scan()) {
             if(!clazz.isInterface()){
                 implementors.add(Reflections.instantiate(clazz));

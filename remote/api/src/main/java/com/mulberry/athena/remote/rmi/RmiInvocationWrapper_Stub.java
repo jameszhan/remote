@@ -41,7 +41,7 @@ public final class RmiInvocationWrapper_Stub
     public com.mulberry.athena.remote.RemoteInvocationResult invoke(com.mulberry.athena.remote.RemoteInvocation $param_RemoteInvocation_1)
 	throws java.lang.Exception
     {
-	Object $result = ref.invoke(this, $method_invoke_1, new java.lang.Object[] {$param_RemoteInvocation_1}, -1992467752225176671L);
+	Object $result = ref.invoke(this, $method_invoke_1, new java.lang.Object[] {$param_RemoteInvocation_1}, -1167934894633003505L);
 	return ((com.mulberry.athena.remote.RemoteInvocationResult) $result);
     }
 }

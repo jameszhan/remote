@@ -11,6 +11,8 @@ import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -24,6 +26,8 @@ import java.rmi.RemoteException;
  */
 public class RmiInvocationTests {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(RmiInvocationTests.class);
+
     @BeforeClass
     public static void bindService() throws RemoteException{
         RmiServiceRegistry.rebind("String", "Hello World!");
@@ -33,9 +37,10 @@ public class RmiInvocationTests {
 
     @AfterClass
     public static void unbindService() throws NotBoundException, RemoteException {
-        RmiServiceRegistry.unbind("String");
-        RmiServiceRegistry.unbind("HelloService");
-        RmiServiceRegistry.unbind("StandardRemote");
+        for (String serviceName : RmiServiceRegistry.list()) {
+            LOGGER.info("unbind {}", serviceName);
+            RmiServiceRegistry.unbind(serviceName);
+        }
     }
 
     @Test
@@ -47,6 +52,14 @@ public class RmiInvocationTests {
 
     @Test
     public void testHelloService() throws Exception {
+        HelloService hs = RmiServiceRegistry.lookup("HelloService", HelloService.class);
+        String echo = hs.echo("Hello World!");
+        Assert.assertEquals(echo, "HelloService echo: Hello World!");
+        Assert.assertEquals(hs.sayHello("James"), "Hello James");
+    }
+
+    @Test
+    public void testNaming() throws Exception {
         HelloService hs = RmiServiceRegistry.lookup("rmi://localhost:1099/HelloService", HelloService.class);
         String echo = hs.echo("Hello World!");
         Assert.assertEquals(echo, "HelloService echo: Hello World!");

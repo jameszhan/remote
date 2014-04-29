@@ -43,7 +43,7 @@ public class CalculatorTests {
     private static Service clientService;
 
     private static URL wsdlDocumentUrl;
-    private static String namespace = "http://demo.jaxws.remote.mulberry.com/";
+    private static String namespace = "http://demo.jaxws.remote.athena.mulberry.com/";
     private static String serviceName = "CalculatorImplService";
     private static String portName = "CalculatorImplPort";
 

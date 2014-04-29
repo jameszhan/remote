@@ -38,6 +38,10 @@
             <artifactId>FastInfoset</artifactId>
             <version>1.2.13</version>
         </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+        </dependency>
 
         <!--
         <dependency>
