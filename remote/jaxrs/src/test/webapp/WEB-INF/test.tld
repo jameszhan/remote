@@ -8,7 +8,7 @@
 	<info>A catalog of basic tags.</info>
 	<tag>
 		<name>hello</name>
-		<tagclass>com.apple.www.jsptag.HelloTag</tagclass>
+		<tagclass>com.mulberry.athena.jsr.jsp.HelloTag</tagclass>
 		<bodycontent>empty</bodycontent>
 		<info>
 			Hello World test.
@@ -22,7 +22,7 @@
 
 	<tag>
 		<name>msg</name>
-		<tagclass>com.apple.www.jsptag.samples.MessageTag</tagclass>
+		<tagclass>com.mulberry.athena.jsr.jsp.tags.MessageTag</tagclass>
 		<bodycontent>scriptless</bodycontent>
 		<info>
 			Generic test.
@@ -31,8 +31,8 @@
 
 	<tag>
 		<name>loop</name>
-		<tagclass>com.apple.www.jsptag.samples.LoopTag</tagclass>
-		<teiclass>com.apple.www.jsptag.samples.LoopValidator</teiclass>
+		<tagclass>com.mulberry.athena.jsr.jsp.tags.LoopTag</tagclass>
+		<teiclass>com.mulberry.athena.jsr.jsp.tags.LoopValidator</teiclass>
 		<bodycontent>JSP</bodycontent>
 		<info>
 			Loop Tag.
@@ -45,8 +45,8 @@
 	
 	<tag>
 		<name>lo</name>
-		<tagclass>com.apple.www.jsptag.samples.LoopTag</tagclass>
-		<teiclass>com.apple.www.jsptag.samples.LoopValidator</teiclass>
+		<tagclass>com.mulberry.athena.jsr.jsp.tags.LoopTag</tagclass>
+		<teiclass>com.mulberry.athena.jsr.jsp.tags.LoopValidator</teiclass>
 		<bodycontent>tagdependent</bodycontent>
 		<info>
 			Loop Tag.
@@ -59,7 +59,7 @@
 	
 	<tag>
 		<name>life</name>
-		<tagclass>com.apple.www.jsptag.samples.LifecycleTag</tagclass>		
+		<tagclass>com.mulberry.athena.jsr.jsp.tags.LifecycleTag</tagclass>
 		<bodycontent>JSP</bodycontent>
 		<info>
 			Lifecycle Tag.

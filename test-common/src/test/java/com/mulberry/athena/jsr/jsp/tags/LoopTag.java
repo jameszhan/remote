@@ -1,4 +1,4 @@
-package com.apple.www.jsptag.samples;
+package com.mulberry.athena.jsr.jsp.tags;
 
 import javax.servlet.jsp.JspException;
 
