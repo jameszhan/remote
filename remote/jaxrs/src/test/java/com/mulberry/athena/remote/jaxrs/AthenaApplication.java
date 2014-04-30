@@ -4,8 +4,10 @@ import org.glassfish.jersey.filter.LoggingFilter;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 
+import javax.ws.rs.ApplicationPath;
 import java.util.logging.Logger;
 
+@ApplicationPath("/")
 public class AthenaApplication extends ResourceConfig {
 
     private static final Logger LOGGER = Logger.getLogger("AthenaApplication");

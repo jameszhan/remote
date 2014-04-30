@@ -13,7 +13,7 @@ public class JettyServer {
 		connector.setPort(8088);
 		server.addConnector(connector);
 
-		WebAppContext webapp = new WebAppContext("remote/webs/src/site", "/");
+		WebAppContext webapp = new WebAppContext("remote/jaxrs/src/site", "/");
 
 		server.setHandler(webapp);
 		server.start();
