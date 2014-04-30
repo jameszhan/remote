@@ -5,12 +5,12 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 
 import com.google.restful.provider.entity.ListProcessor;
-import com.google.restful.provider.entity.Processer;
+import com.google.restful.provider.entity.Processor;
 import com.google.restful.user.bean.User;
 
 
 @ListProcessor
-public class UserListProcessor implements Processer {
+public class UserListProcessor implements Processor {
 
 	@Override
 	public boolean accept(Class<?> clazz) {

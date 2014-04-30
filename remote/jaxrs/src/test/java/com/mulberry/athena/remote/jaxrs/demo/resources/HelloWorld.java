@@ -1,4 +1,4 @@
-package com.mulberry.athena.remote.jaxrs.demo;
+package com.mulberry.athena.remote.jaxrs.demo.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

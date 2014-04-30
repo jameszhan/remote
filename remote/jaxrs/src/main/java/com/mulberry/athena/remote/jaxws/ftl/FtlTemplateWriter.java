@@ -30,20 +30,12 @@ import com.google.common.base.Splitter;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-import com.sun.jersey.api.container.ContainerException;
-import com.sun.jersey.api.view.Viewable;
-import com.sun.jersey.core.reflection.ReflectionHelper;
-import com.sun.jersey.core.spi.component.ComponentConstructor;
-import com.sun.jersey.core.spi.component.ComponentInjector;
-import com.sun.jersey.core.spi.scanning.PackageNamesScanner;
-import com.sun.jersey.core.spi.scanning.Scanner;
-import com.sun.jersey.spi.inject.InjectableProviderContext;
-import com.sun.jersey.spi.scanning.AnnotationScannerListener;
 
 import freemarker.cache.WebappTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
+/*
 @Produces(MediaType.TEXT_HTML)
 @Provider
 public class FtlTemplateWriter implements MessageBodyWriter<Object> {
@@ -60,8 +52,7 @@ public class FtlTemplateWriter implements MessageBodyWriter<Object> {
 	
 	private Configuration cfg = new Configuration();
 
-	public FtlTemplateWriter(@Context ServletContext servletContext, @Context InjectableProviderContext ipc)
-	{
+	public FtlTemplateWriter(@Context ServletContext servletContext, @Context InjectableProviderContext ipc) {
 		LOGGER.info("FtlTemplateWriter start to initialize!");	
 		cfg.setTemplateLoader(new WebappTemplateLoader(servletContext));
 		cfg.setServletContextForTemplateLoading(
@@ -159,3 +150,4 @@ public class FtlTemplateWriter implements MessageBodyWriter<Object> {
 	
 
 }
+*/

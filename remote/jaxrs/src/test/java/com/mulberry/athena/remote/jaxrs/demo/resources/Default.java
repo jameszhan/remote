@@ -1,4 +1,4 @@
-package com.mulberry.athena.remote.jaxrs.demo;
+package com.mulberry.athena.remote.jaxrs.demo.resources;
 
 import java.io.File;
 import java.net.URL;
@@ -11,12 +11,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 
-import com.sun.jersey.api.representation.Form;
 
 @Path("/")
 public class Default {
@@ -40,7 +36,6 @@ public class Default {
 		} catch (Exception e) {		
 			throw new WebApplicationException(e, 500);
 		}
-	
 	}
 	
 	
@@ -61,15 +56,14 @@ public class Default {
 	@GET
 	@Path("/rsc")
 	public Response doGet() {
-		
 		for (String key : uriInfo.getQueryParameters().keySet())
 			System.out.println("key: " + key + " value: " + uriInfo.getQueryParameters().getFirst(key));
 		String repString = uriInfo.getQueryParameters().getFirst("rep");
-		int rep = repString != null ?Integer.parseInt(repString) : 0;
+		int rep = repString != null ? Integer.parseInt(repString) : 0;
 
 		String help = "<pre>For example, http://localhost:/rsc?rep=1\n" + "Valid Representations:\n" + "\t0 - StringRepresentation of this message\n"
 				+ "\t1 - StringRepresentation\n" + "\t2 - FormURLEncodedRepresentation\n" + "\t3 - DataSourceRepresentation\n</pre>";
-		Response r = null;
+		Response r;
 		System.out.println("rep: " + rep);
 		switch (rep) {
 		case 0:
@@ -98,9 +92,9 @@ public class Default {
 
 	public Form getFormURLEncodedRep() {
 		Form urlProps = new Form();
-		urlProps.add("representation", "FormURLEncodedRepresentation");
-		urlProps.add("name", "Master Duke");
-		urlProps.add("sex", "male");	
+		urlProps.param("representation", "FormURLEncodedRepresentation");
+		urlProps.param("name", "Master Duke");
+		urlProps.param("sex", "male");
 		return urlProps;
 	}
 

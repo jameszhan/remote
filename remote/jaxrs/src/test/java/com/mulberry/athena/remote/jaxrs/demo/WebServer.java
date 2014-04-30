@@ -1,18 +1,24 @@
 
 package com.mulberry.athena.remote.jaxrs.demo;
 
-import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
-import com.sun.jersey.api.core.PackagesResourceConfig;
-import com.sun.jersey.api.core.ResourceConfig;
+import com.mulberry.athena.remote.jaxrs.AthenaApplication;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
 
+import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
+import java.net.URI;
 
 public class WebServer {
 
+    private static URI getBaseURI() {
+        return UriBuilder.fromUri("http://localhost").port(8086).path("/").build();
+    }
+
     public static void main(String[] args) throws IOException {
-        ResourceConfig rc = new PackagesResourceConfig("com.mulberry.athena.remote.jaxws");
-        HttpServer httpServer = GrizzlyServerFactory.createHttpServer("http://localhost:8080", rc);
+        ResourceConfig rc = new AthenaApplication();
+        HttpServer httpServer = GrizzlyHttpServerFactory.createHttpServer(getBaseURI(), rc);
 
         httpServer.start();
         try {

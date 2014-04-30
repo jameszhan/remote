@@ -10,7 +10,7 @@ import javax.ws.rs.core.MediaType;
 
 import com.mulberry.athena.remote.jaxrs.demo.entity.Party;
 import com.mulberry.athena.remote.jaxrs.demo.entity.Person;
-import com.sun.jersey.api.view.Viewable;
+import org.glassfish.jersey.server.mvc.Viewable;
 
 @Path("/view")
 public class JspResource {

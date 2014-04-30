@@ -46,6 +46,7 @@ public final class Scanners {
     private static final Set<String> ZIP_FILE_FORMATS = ImmutableSet.of("jar", "zip", "war", "par", "ear");
     private static final Predicate<Path> IS_ZIP_FILE = new ExtensionPredicate(ZIP_FILE_FORMATS);
 
+    @SafeVarargs
     public static Collection<Class<?>> annotatedBy(String pkg, Class<? extends Annotation>... annotations) throws IOException{
         return new AnnotatedScanner(ImmutableSet.of(pkg), annotations).scan();
     }

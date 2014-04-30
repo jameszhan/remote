@@ -1,22 +1,28 @@
 package com.mulberry.athena.remote.jaxrs.demo;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import com.mulberry.athena.remote.jaxrs.demo.resources.Default;
 
-import com.sun.jersey.api.container.httpserver.HttpServerFactory;
-import com.sun.jersey.api.core.DefaultResourceConfig;
-import com.sun.jersey.api.core.ResourceConfig;
 import com.sun.net.httpserver.HttpServer;
+import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
+
+import javax.ws.rs.core.UriBuilder;
+import java.io.IOException;
+import java.net.URI;
 
 public class SimpleServer {
 
+    private static URI getBaseURI() {
+        return UriBuilder.fromUri("http://localhost").port(8086).path("/").build();
+    }
+
 
     public static void main(String[] args) throws IOException {
-        final Map<String, Object> initParams = new HashMap<String, Object>();
-        initParams.put("com.sun.jersey.config.property.packages", "com.sun.jersey.samples.helloworld.resources");
-        ResourceConfig rc = new DefaultResourceConfig();
-        rc.setPropertiesAndFeatures(initParams);
-        HttpServer server = HttpServerFactory.create("http://localhost:8888", rc);
+        ResourceConfig rc = new ResourceConfig(Default.class);
+        HttpServer server = JdkHttpServerFactory.createHttpServer(getBaseURI(), rc);
+
+        System.in.read();
+
+        server.stop(0);
     }
 }

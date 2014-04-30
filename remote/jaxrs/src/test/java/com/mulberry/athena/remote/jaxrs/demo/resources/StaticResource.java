@@ -3,6 +3,7 @@ package com.mulberry.athena.remote.jaxrs.demo.resources;
 import java.io.File;
 
 import javax.activation.MimetypesFileTypeMap;
+import javax.inject.Singleton;
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -11,7 +12,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
-import com.sun.jersey.spi.resource.Singleton;
 
 @Singleton
 @Path("/static")
