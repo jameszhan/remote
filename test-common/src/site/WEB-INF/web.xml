@@ -11,20 +11,9 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
-    <servlet>
-        <servlet-name>debug</servlet-name>
-        <servlet-class>com.mulberry.athena.web.DebugServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-
     <servlet-mapping>
         <servlet-name>ftl</servlet-name>
         <url-pattern>*.htm</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>debug</servlet-name>
-        <url-pattern>*.d</url-pattern>
     </servlet-mapping>
 
     <mime-mapping>
