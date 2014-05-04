@@ -1,4 +1,4 @@
-package com.apple.www.web;
+package com.mulberry.athena.web;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -48,7 +48,7 @@ public class FtlServlet extends HttpServlet {
 		String path = req.getServletPath();
 		String viewName = path.replace(".htm", ".ftl");
 		System.out.println(viewName);
-		Template template = freemarkerConfig.getTemplate("WEB-INF/" + viewName);
+		Template template = freemarkerConfig.getTemplate("WEB-INF" + viewName);
 		try {
 			template.process(buildModel(req, resp), resp.getWriter());
 		} catch (TemplateException e) {

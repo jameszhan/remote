@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.JspFragment;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 
@@ -14,7 +15,10 @@ public class MessageTag extends SimpleTagSupport{
 		super.doTag();
 		JspWriter out = getJspContext().getOut();
 		out.write("<span style=\"color:red; font-weight:bold\">");
-		getJspBody().invoke(null);
+        JspFragment jspFragment = getJspBody();
+        if (jspFragment != null) {
+            jspFragment.invoke(null);
+        }
 		out.write("</span>");
 	}
 	

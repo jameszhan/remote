@@ -1,4 +1,4 @@
-<%@taglib uri="http://www.apple.com/tags" prefix="my" %>
+<%@taglib uri="http://www.mulberry.com/tags" prefix="my" %>
 <html>
 <head>
 <title>Samples</title>

@@ -14,11 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LifecycleTag extends BodyTagSupport {
+    private static final Logger logger = LoggerFactory.getLogger(LifecycleTag.class);
 
 	private static final long serialVersionUID = 1L;
 	private int maxLoop = 5;
-	
-	private Logger logger = LoggerFactory.getLogger(getClass());
 	private StringBuffer sb = new StringBuffer();
 	
 	private int startFlag = EVAL_BODY_BUFFERED;

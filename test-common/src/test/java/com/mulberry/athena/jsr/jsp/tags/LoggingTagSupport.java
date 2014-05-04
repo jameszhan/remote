@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 
 public class LoggingTagSupport extends TagSupport{
 
+    private static final Logger logger = LoggerFactory.getLogger(LoggingTagSupport.class);
 	private static final long serialVersionUID = 1L;
-	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public int doStartTag() throws JspException {	
