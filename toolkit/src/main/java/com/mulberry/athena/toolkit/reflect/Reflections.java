@@ -30,7 +30,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Created with IntelliJ IDEA.
  *
- * @author zizhi.zhzzh
+ * @author James Zhan
  *         Date: 4/22/14
  *         Time: 11:36 PM
  */
@@ -41,7 +41,7 @@ public final class Reflections {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Reflections.class);
     private static final LoadingCache<BeanCopierKey, BeanCopier> BEAN_COPIER_CACHE = CacheBuilder.newBuilder()
-            .maximumSize(1000).build(new CacheLoader<BeanCopierKey, BeanCopier>() {
+            .maximumSize(1000).softValues().build(new CacheLoader<BeanCopierKey, BeanCopier>() {
         public BeanCopier load(BeanCopierKey key) throws Exception {
             LOGGER.debug("Not found {}, create it!", key);
             return BeanCopier.create(key.fromClass, key.toClass, false);

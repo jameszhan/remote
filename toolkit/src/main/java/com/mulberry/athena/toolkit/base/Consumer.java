@@ -5,8 +5,6 @@
  */
 package com.mulberry.athena.toolkit.base;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.annotations.GwtCompatible;
 
 /**

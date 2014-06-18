@@ -1,30 +1,24 @@
 package com.mulberry.athena.remote.jaxws.ftl;
 
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-
-import org.slf4j.Logger;
-
-//import com.mulberry.athena.remote.jaxrs.demo.entity.Person;
-import org.slf4j.LoggerFactory;
+import java.io.OutputStream;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 @FtlAssemble
 public class ClassMappedViewResolver implements ViewResolver {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(ClassMappedViewResolver.class);
-	private Map<Class<?>, String> map = new HashMap<Class<?>, String>();
+
+    private final Cache<Class<?>, String> viewMappings = CacheBuilder.newBuilder().build();
 
 	private @Context UriInfo ui;
-
-	public ClassMappedViewResolver() {
-	//	map.put(List.class, "list.ftl");
-	//	map.put(Person.class, "person.ftl");
-	}
 
 	@Override
 	public int getOrder() {
@@ -32,16 +26,17 @@ public class ClassMappedViewResolver implements ViewResolver {
 	}
 
 	@Override
-	public String resolveViewName(Object t, Class<?> type, OutputStream entityStream) {	
-		String viewName = null;
-		for(Class<?> clazz : map.keySet()){
-			if(clazz.isAssignableFrom(type)){
-				viewName = map.get(clazz);
-				LOGGER.info(String.format("For request:%s, find view:%s!", ui.getRequestUri(), viewName));
-				break;
-			}
-		}		
-		return viewName;
+	public String resolveViewName(Object t, final Class<?> type, OutputStream entityStream) {
+        try {
+            return viewMappings.get(type, new Callable<String>() {
+                @Override public String call() throws Exception {
+                    return type.getSimpleName().toLowerCase() + ".ftl";
+                }
+            });
+        } catch (ExecutionException e) {
+            LOGGER.info(String.format("Can't find view for request %s!", ui.getRequestUri()), e);
+            return null;
+        }
 	}
 
 
