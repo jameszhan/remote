@@ -9,10 +9,10 @@ import java.util.*;
  * @author zizhi.zhzzh
  *         Date: 1/16/14
  *         Time: 9:58 PM
- * ��Ӧ�̳�List������Collection���ϵ����࣬Hessian��ʹ��CollectionSerializer�����������л��Ĺ����л����Ĭ�ϵĹ��캯����
- * ����һ���µ�List��Ȼ����List��һ��һ������Ԫ�أ��ⲻ�����⣬�ؼ��Ǿ�Ȼ�����List֮������ݣ������ҳ��ص����ݣ���϶���
- * ���Եģ���Ȼ������չSerializerFactory������������Ҫ����ע��_staticSerializerMap���൱���㡣���������ǵ�Ӧ���У�
- * recordsһ���趨���Ͳ���ϣ�����÷����¼��ϱ��������Ծ����̳�Iterable�ӿڣ���ȥ�����п��Ը��ļ��ϵ����з�����
+ * 本应继承List，对于Collection集合的子类，Hessian会使用CollectionSerializer处理，在序列化的过程中会调用默认的构造函数，
+ * 创建一个新的List，然后往List中一个一个添加元素，这不是问题，关键是居然会忽略List之外的数据，比如分页相关的数据，这肯定是
+ * 不对的，当然可以扩展SerializerFactory，但是这样需要反射注入_staticSerializerMap，相当不便。而且在我们的应用中，
+ * records一旦设定，就不再希望调用方更新集合本身，所以决定继承Iterable接口，并去除所有可以更改集合的所有方法。
  *
  */
 public class PaginatedList<T extends Serializable> implements Iterable<T>, Serializable {

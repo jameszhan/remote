@@ -9,8 +9,12 @@
     <artifactId>athena</artifactId>
     <packaging>pom</packaging>
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java_source_version>1.7</java_source_version>
         <java_target_version>1.7</java_target_version>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <java.version>1.7</java.version>
         <file_encoding>UTF-8</file_encoding>
         <log4j.version>1.2.17</log4j.version>
         <slf4j.version>1.7.6</slf4j.version>
@@ -70,7 +74,7 @@
             <dependency>
                 <groupId>com.google.code.findbugs</groupId>
                 <artifactId>jsr305</artifactId>
-                <version>2.0.3</version>
+                <version>3.0.0</version>
             </dependency>
 
             <dependency>
@@ -101,8 +105,6 @@
                 <artifactId>hessian</artifactId>
                 <version>4.0.33</version>
             </dependency>
-
-
 
             <dependency>
                 <groupId>net.sf.ehcache</groupId>

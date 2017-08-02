@@ -1,13 +1,12 @@
 package com.mulberry.athena.toolkit.compile;
 
+import com.google.common.collect.Maps;
 import com.mulberry.athena.toolkit.reflect.DynamicClassLoader;
 
 import javax.tools.*;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +24,7 @@ public class DynamicCompiler {
     public CompiledResult compile(String qualifiedName, String sourceCode) {
         SimpleJavaFileObject file = new StringSourceFile(qualifiedName, sourceCode);
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        Map<String, StringClassFile> cache = new HashMap<>();
+        Map<String, StringClassFile> cache = Maps.newHashMap();
         JavaFileManager fileManager = new CachedFileManager(compiler.getStandardFileManager(null, null, null), cache);
         try {
             DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();

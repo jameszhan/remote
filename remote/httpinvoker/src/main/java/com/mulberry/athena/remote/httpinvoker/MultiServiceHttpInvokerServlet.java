@@ -51,7 +51,7 @@ public class MultiServiceHttpInvokerServlet extends HttpServlet {
                         logger.warn("Can't load class " + serviceClass);
                     }
                 }else{
-                    logger.debug("Ingore init parameter: " + key);
+                    logger.debug("Ignore init parameter: " + key);
                 }
             }
             if(logger.isDebugEnabled()){
