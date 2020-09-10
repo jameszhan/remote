@@ -17,3 +17,8 @@ toolkit/target/
 toolkit/target/*
 remote-api/target/
 remote-api/target/*
+
+.idea/
+*.iws
+*.iml
+*.ipr
