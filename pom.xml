@@ -19,7 +19,7 @@
         <log4j.version>1.2.17</log4j.version>
         <slf4j.version>1.7.6</slf4j.version>
         <guava.version>16.0.1</guava.version>
-        <jetty.version>8.1.15.v20140411</jetty.version>
+        <jetty.version>9.4.31.v20200723</jetty.version>
         <grizzly.version>1.9.59</grizzly.version>
         <jersey.version>2.7</jersey.version>
         <grizzly-version>2.3.11</grizzly-version>
